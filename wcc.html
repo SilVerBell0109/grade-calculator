@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>웹클라이언트컴퓨팅 성적 계산기</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .seg-group {
+      display: flex;
+      gap: 2px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 3px;
+    }
+    .seg-btn {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .seg-btn.active {
+      background: var(--bg);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+    }
+
+    .goal-card {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+    }
+    .goal-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .goal-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .goal-result {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+    }
+    .goal-result b { color: var(--text); font-family: var(--font-mono); font-weight: 500; }
+    .goal-achievable { color: #3B6D11; }
+    .goal-impossible { color: #A32D2D; }
+    @media (prefers-color-scheme: dark) {
+      .goal-achievable { color: #C0DD97; }
+      .goal-impossible { color: #F7C1C1; }
+    }
+
+    .grade-table { display: flex; flex-direction: column; gap: 3px; }
+    .grade-table-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .grade-table-row.current { background: var(--bg-secondary); }
+    .grade-table-badge {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      width: 36px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .grade-table-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .grade-table-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--border-strong);
+      transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+      width: 0%;
+    }
+    .grade-table-threshold {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      width: 58px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .result-divider {
+      height: 0.5px;
+      background: var(--border);
+      margin: 1rem 0;
+    }
+    .weakest-text {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 3px;
+    }
+    .hint-border {
+      border-top: 0.5px solid var(--border);
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">성적 계산기</a>
+    <div class="nav-links">
+      <a href="ds.html" class="nav-link">자료구조</a>
+      <a href="cpp.html" class="nav-link">C++</a>
+      <a href="db.html" class="nav-link">데이타베이스</a>
+      <a href="wcc.html" class="nav-link active">웹클라이언트</a>
+      <a href="https://dld2026.ysjoo-e6a.workers.dev/#/6" class="nav-link" target="_blank" rel="noopener">논리회로</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>웹클라이언트컴퓨팅 성적 계산기</h1>
+      <p>국민대학교 소프트웨어융합대학 · 2026-1학기 · 이다원 교수</p>
+    </div>
+
+    <!-- 시험 -->
+    <p class="section-label">시험 <span class="section-label-sub">×20% 각각</span></p>
+    <div class="input-grid-2">
+      <div class="input-stack">
+        <div class="input-card">
+          <div class="input-row">
+            <span class="input-label">중간고사</span>
+            <div class="input-right">
+              <span class="input-max">/ 100</span>
+              <input type="number" id="mid" min="0" max="100" value="0">
+            </div>
+          </div>
+          <div class="convert-hint">×20% · 7주차 4/14</div>
+        </div>
+      </div>
+      <div class="input-stack">
+        <div class="input-card">
+          <div class="input-row">
+            <span class="input-label">기말고사</span>
+            <div class="input-right">
+              <span class="input-max">/ 100</span>
+              <input type="number" id="fin" min="0" max="100" value="0">
+            </div>
+          </div>
+          <div class="convert-hint">×20% · 14주차 6/2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 수행과제 -->
+    <p class="section-label">수행과제</p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">프로젝트</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="proj" min="0" max="100" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">×35% · HTML/CSS/JS 웹 제작</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">과제물</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="hw" min="0" max="100" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">×15% · 실습과제</div>
+      </div>
+    </div>
+
+    <!-- 참여 -->
+    <p class="section-label">참여</p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">출석</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="att" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+        <div class="convert-hint">×10% · 100 = 결석 없음 기준</div>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <p class="section-label">결과</p>
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label">총점</div>
+          <div class="score-total" id="total-score">10.00</div>
+          <div class="weakest-text" id="weakest"></div>
+        </div>
+        <div class="grade-badge grade-f" id="grade-badge">F</div>
+      </div>
+
+      <div class="result-divider"></div>
+
+      <div class="bar-section">
+        <div class="bar-row">
+          <span class="bar-label">중간고사 ×0.20</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-mid" style="background:#378ADD"></div></div>
+          <span class="bar-val" id="val-mid">0.0 / 20</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">기말고사 ×0.20</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-fin" style="background:#1D9E75"></div></div>
+          <span class="bar-val" id="val-fin">0.0 / 20</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">프로젝트 ×0.35</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-proj" style="background:#7F77DD"></div></div>
+          <span class="bar-val" id="val-proj">0.0 / 35</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">과제물 ×0.15</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-hw" style="background:#639922"></div></div>
+          <span class="bar-val" id="val-hw">0.0 / 15</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">출석 ×0.10</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-att" style="background:#BA7517"></div></div>
+          <span class="bar-val" id="val-att">10.0 / 10</span>
+        </div>
+      </div>
+
+      <div class="hint-text hint-border" id="hint-text"></div>
+    </div>
+
+    <!-- 목표 역산 -->
+    <p class="section-label">목표 역산</p>
+    <div class="goal-card">
+      <div class="goal-card-header">
+        <span class="goal-label">목표 등급</span>
+        <div class="seg-group" id="seg-group">
+          <button class="seg-btn" data-min="95" data-label="A+">A+</button>
+          <button class="seg-btn active" data-min="90" data-label="A0">A0</button>
+          <button class="seg-btn" data-min="85" data-label="B+">B+</button>
+          <button class="seg-btn" data-min="80" data-label="B0">B0</button>
+        </div>
+      </div>
+      <div class="goal-result" id="goal-result"></div>
+    </div>
+
+    <!-- 등급 기준표 -->
+    <p class="section-label">등급 기준 (절대평가)</p>
+    <div class="result-card">
+      <div class="grade-table" id="grade-table"></div>
+    </div>
+
+    <div class="page-footer">
+      <div class="formula-text">
+        총점 = 중간×0.20 + 기말×0.20 + 프로젝트×0.35 + 과제물×0.15 + 출석×0.10<br>
+        기말고사 6/2~6/4 · 팀프로젝트 발표 6/9~6/11
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, isNaN(+v) ? mn : +v)); }
+
+    const GRADES = [
+      { label: 'A+', min: 95, cls: 'grade-ap' },
+      { label: 'A0', min: 90, cls: 'grade-a'  },
+      { label: 'B+', min: 85, cls: 'grade-bp' },
+      { label: 'B0', min: 80, cls: 'grade-b'  },
+      { label: 'C+', min: 75, cls: 'grade-cp' },
+      { label: 'C0', min: 70, cls: 'grade-c'  },
+      { label: 'D+', min: 65, cls: 'grade-dp' },
+      { label: 'D0', min: 60, cls: 'grade-d'  },
+      { label: 'F',  min:  0, cls: 'grade-f'  },
+    ];
+
+    const ITEMS = [
+      { id: 'mid',  name: '중간고사', weight: 0.20 },
+      { id: 'fin',  name: '기말고사', weight: 0.20 },
+      { id: 'proj', name: '프로젝트', weight: 0.35 },
+      { id: 'hw',   name: '과제물',   weight: 0.15 },
+      { id: 'att',  name: '출석',     weight: 0.10 },
+    ];
+
+    function getGrade(total) {
+      for (const g of GRADES) if (total >= g.min) return g;
+      return GRADES[GRADES.length - 1];
+    }
+
+    // Build grade table rows once
+    const gradeTableEl = document.getElementById('grade-table');
+    GRADES.forEach(g => {
+      const row = document.createElement('div');
+      row.className = 'grade-table-row';
+      row.id = 'grow-' + g.cls;
+      row.innerHTML =
+        `<span class="grade-table-badge ${g.cls}">${g.label}</span>` +
+        `<div class="grade-table-bar"><div class="grade-table-bar-fill" id="gfill-${g.cls}"></div></div>` +
+        `<span class="grade-table-threshold">${g.min === 0 ? '60점 미만' : g.min + '점 이상'}</span>`;
+      gradeTableEl.appendChild(row);
+    });
+
+    // Goal segment buttons
+    let goalMin = 90;
+    let goalLabel = 'A0';
+    document.getElementById('seg-group').addEventListener('click', e => {
+      const btn = e.target.closest('.seg-btn');
+      if (!btn) return;
+      document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      goalMin = +btn.dataset.min;
+      goalLabel = btn.dataset.label;
+      updateGoal();
+    });
+
+    let currentTotal = 0;
+
+    function updateGoal() {
+      const gap = goalMin - currentTotal;
+      let html = '';
+
+      if (gap <= 0) {
+        html = `<b class="goal-achievable">목표 ${goalLabel} (${goalMin}점) 달성 조건을 충족합니다</b>`;
+      } else {
+        html = `목표 ${goalLabel} (${goalMin}점) 달성까지 <b>${gap.toFixed(2)}점</b> 부족<br>`;
+
+        const zeroItems = ITEMS.filter(item =>
+          clamp(document.getElementById(item.id).value, 0, 100) === 0
+        );
+
+        if (zeroItems.length === 0) {
+          html += `현재 0점 항목 없음`;
+        } else {
+          const names = zeroItems.map(i => i.name).join(', ');
+          html += `현재 0점 항목: <b>${names}</b><br>`;
+          const assumed = currentTotal + zeroItems.reduce((s, i) => s + 100 * i.weight, 0);
+          const possible = assumed >= goalMin;
+          html += `→ 해당 항목 만점 가정 시 예상 총점: <b>${assumed.toFixed(2)}점</b> `;
+          html += possible
+            ? `<span class="goal-achievable">(달성 가능)</span>`
+            : `<span class="goal-impossible">(달성 불가)</span>`;
+        }
+      }
+
+      document.getElementById('goal-result').innerHTML = html;
+    }
+
+    function calc() {
+      const mid  = clamp(document.getElementById('mid').value,  0, 100);
+      const fin  = clamp(document.getElementById('fin').value,  0, 100);
+      const proj = clamp(document.getElementById('proj').value, 0, 100);
+      const hw   = clamp(document.getElementById('hw').value,   0, 100);
+      const att  = clamp(document.getElementById('att').value,  0, 100);
+
+      const vMid  = mid  * 0.20;
+      const vFin  = fin  * 0.20;
+      const vProj = proj * 0.35;
+      const vHw   = hw   * 0.15;
+      const vAtt  = att  * 0.10;
+      const total = vMid + vFin + vProj + vHw + vAtt;
+      currentTotal = total;
+
+      // Total score
+      document.getElementById('total-score').textContent = total.toFixed(2);
+
+      // Grade badge
+      const grade = getGrade(total);
+      const badge = document.getElementById('grade-badge');
+      badge.textContent = grade.label;
+      badge.className = 'grade-badge ' + grade.cls;
+
+      // Weakest item (lowest raw input score)
+      const rawScores = [
+        { name: '중간고사', val: mid  },
+        { name: '기말고사', val: fin  },
+        { name: '프로젝트', val: proj },
+        { name: '과제물',   val: hw   },
+        { name: '출석',     val: att  },
+      ];
+      const weakest = rawScores.reduce((a, b) => a.val <= b.val ? a : b);
+      document.getElementById('weakest').textContent =
+        `최저 항목: ${weakest.name} (${weakest.val.toFixed(0)}점)`;
+
+      // Bars
+      function setBar(barId, valId, val, max) {
+        document.getElementById(barId).style.width = (Math.min(val / max, 1) * 100) + '%';
+        document.getElementById(valId).textContent = `${val.toFixed(1)} / ${max}`;
+      }
+      setBar('bar-mid',  'val-mid',  vMid,  20);
+      setBar('bar-fin',  'val-fin',  vFin,  20);
+      setBar('bar-proj', 'val-proj', vProj, 35);
+      setBar('bar-hw',   'val-hw',   vHw,   15);
+      setBar('bar-att',  'val-att',  vAtt,  10);
+
+      // Hint text
+      const hintEl = document.getElementById('hint-text');
+      if (total >= 95) {
+        hintEl.textContent = 'A+ 달성 조건을 충족합니다';
+      } else {
+        const toAp = 95 - total;
+        const gradeIdx = GRADES.indexOf(grade);
+        const nextUp = gradeIdx > 0 ? GRADES[gradeIdx - 1] : null;
+        let hint = `A+ 까지 ${toAp.toFixed(2)}점 부족`;
+        if (nextUp) hint += `  ·  다음 등급(${nextUp.label})까지 ${(nextUp.min - total).toFixed(2)}점`;
+        hintEl.textContent = hint;
+      }
+
+      // Grade table: highlight current row + fill bars
+      GRADES.forEach((g, idx) => {
+        document.getElementById('grow-' + g.cls).classList.toggle('current', g.cls === grade.cls);
+
+        const upperMin = idx > 0 ? GRADES[idx - 1].min : 100;
+        const rangeSize = upperMin - g.min;
+        const fill = document.getElementById('gfill-' + g.cls);
+
+        if (g.cls === grade.cls) {
+          // Show position within this grade's range
+          const pct = rangeSize > 0 ? Math.min((total - g.min) / rangeSize, 1) * 100 : 100;
+          fill.style.width = pct + '%';
+        } else if (total >= upperMin) {
+          fill.style.width = '100%';
+        } else {
+          fill.style.width = '0%';
+        }
+      });
+
+      updateGoal();
+    }
+
+    document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
+    calc();
+  </script>
+</body>
+</html>

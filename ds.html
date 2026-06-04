@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자료구조 성적 계산기</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">성적 계산기</a>
+    <div class="nav-links">
+      <a href="ds.html" class="nav-link active">자료구조</a>
+      <a href="cpp.html" class="nav-link">C++</a>
+      <a href="db.html" class="nav-link">데이타베이스</a>
+      <a href="wcc.html" class="nav-link">웹클라이언트</a>
+      <a href="https://dld2026.ysjoo-e6a.workers.dev/#/6" class="nav-link" target="_blank" rel="noopener">논리회로</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>자료구조</h1>
+      <p>이상환 교수 · 국민대학교 소프트웨어융합대학 · 2026-1학기 · 절대평가 (ABF 제도)</p>
+    </div>
+
+    <!-- 중간고사 -->
+    <p class="section-label">중간고사</p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">중간고사</span>
+        <div class="input-right">
+          <span class="input-max">/ 91</span>
+          <input type="number" id="mid" min="0" max="91" value="91">
+        </div>
+      </div>
+      <div class="convert-hint" id="mid-hint">→ 100점 환산: 0.00점</div>
+    </div>
+
+    <!-- 기말고사 -->
+    <p class="section-label">기말고사</p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">기말고사</span>
+        <div class="input-right">
+          <span class="input-max">/ 91</span>
+          <input type="number" id="fin" min="0" max="91" value="91">
+        </div>
+      </div>
+      <div class="convert-hint" id="fin-hint">→ 100점 환산: 0.00점</div>
+    </div>
+
+    <!-- 과제물 -->
+    <p class="section-label">과제물</p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">과제물</span>
+        <div class="input-right">
+          <span class="input-max">/ 100</span>
+          <input type="number" id="hw" min="0" max="100" value="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- 출석 -->
+    <p class="section-label">출석</p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">출석</span>
+        <div class="input-right">
+          <span class="input-max">/ 5</span>
+          <input type="number" id="att" min="0" max="5" step="0.5" value="5">
+        </div>
+      </div>
+    </div>
+
+    <!-- PCCE -->
+    <p class="section-label">
+      PCCE
+      <span class="section-label-sub">5/21(목) 응시 · 최대 +10점</span>
+    </p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">PCCE</span>
+        <div class="input-right">
+          <span class="input-max">/ 1000</span>
+          <input type="number" id="pcce" min="0" max="1000" value="1000">
+        </div>
+      </div>
+      <div class="convert-hint" id="pcce-hint">→ 보너스: 0.00점 (100점 이하는 0점)</div>
+    </div>
+
+    <!-- 결과 -->
+    <p class="section-label">결과</p>
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label">총점</div>
+          <div class="score-total" id="total">0.00</div>
+        </div>
+        <div class="grade-badge grade-f" id="grade-badge">F</div>
+      </div>
+      <div class="hint-text" id="hint"></div>
+    </div>
+
+    <!-- 점수 구성 바 차트 -->
+    <p class="section-label">점수 구성</p>
+    <div class="result-card">
+      <div class="bar-section">
+        <div class="bar-row">
+          <span class="bar-label">중간고사 ×0.35</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-mid"></div></div>
+          <span class="bar-val" id="bar-mid-val">0.0 / 35</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">기말고사 ×0.40</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-fin"></div></div>
+          <span class="bar-val" id="bar-fin-val">0.0 / 40</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">과제물 ×0.20</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-hw"></div></div>
+          <span class="bar-val" id="bar-hw-val">0.0 / 20</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">출석</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-att"></div></div>
+          <span class="bar-val" id="bar-att-val">0.0 / 5</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">PCCE 보너스</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-pcce"></div></div>
+          <span class="bar-val" id="bar-pcce-val">+0.0 / 10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 등급 기준 -->
+    <p class="section-label">등급 기준 (ABF 절대평가)</p>
+    <div class="grade-chips">
+      <div class="grade-chip grade-ap">A+ <span class="threshold">80↑</span></div>
+      <div class="grade-chip grade-a">A0 <span class="threshold">70↑</span></div>
+      <div class="grade-chip grade-bp">B+ <span class="threshold">60↑</span></div>
+      <div class="grade-chip grade-b">B0 <span class="threshold">50↑</span></div>
+      <div class="grade-chip grade-f">F <span class="threshold">50↓</span></div>
+    </div>
+    <p class="grade-note">ABF 제외 대상자: C+(40↑) · C0(30↑) · D+(20↑) · D0(10↑) · F(10↓)</p>
+
+    <div class="page-footer">
+      <div class="formula-text">
+        총점 = (중간/91×100)×0.35 + (기말/91×100)×0.40 + (과제/100)×0.20 + 출석 + PCCE보너스<br>
+        PCCE 보너스 = max(0, (점수−100)/900×10)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
+
+    function getGrade(s) {
+      if (s >= 80) return ['A+', 'grade-ap'];
+      if (s >= 70) return ['A0', 'grade-a'];
+      if (s >= 60) return ['B+', 'grade-bp'];
+      if (s >= 50) return ['B0', 'grade-b'];
+      if (s >= 40) return ['C+', 'grade-cp'];
+      if (s >= 30) return ['C0', 'grade-c'];
+      if (s >= 20) return ['D+', 'grade-dp'];
+      if (s >= 10) return ['D0', 'grade-d'];
+      return ['F', 'grade-f'];
+    }
+
+    function setBar(id, val, max, color, prefix = false) {
+      const pct = Math.min(val / max, 1) * 100;
+      const fill = document.getElementById(id);
+      fill.style.width = pct + '%';
+      fill.style.background = color;
+      const pfx = prefix ? '+' : '';
+      document.getElementById(id + '-val').textContent = `${pfx}${val.toFixed(1)} / ${max}`;
+    }
+
+    function calc() {
+      const mid  = clamp(document.getElementById('mid').value,  0, 91);
+      const fin  = clamp(document.getElementById('fin').value,  0, 91);
+      const hw   = clamp(document.getElementById('hw').value,   0, 100);
+      const att  = clamp(document.getElementById('att').value,  0, 5);
+      const pcce = clamp(document.getElementById('pcce').value, 0, 1000);
+
+      const midConv = (mid / 91) * 100;
+      const finConv = (fin / 91) * 100;
+      document.getElementById('mid-hint').textContent = `→ 100점 환산: ${midConv.toFixed(2)}점`;
+      document.getElementById('fin-hint').textContent = `→ 100점 환산: ${finConv.toFixed(2)}점`;
+
+      const pcceBonus = pcce <= 100 ? 0 : ((pcce - 100) / 900) * 10;
+      document.getElementById('pcce-hint').textContent = pcce <= 100
+        ? '→ 보너스: 0.00점 (100점 이하는 0점)'
+        : `→ 보너스: +${pcceBonus.toFixed(2)}점`;
+
+      const vMid  = midConv * 0.35;
+      const vFin  = finConv * 0.40;
+      const vHw   = (hw / 100) * 20;
+      const vAtt  = att;
+      const vPcce = pcceBonus;
+      const total = vMid + vFin + vHw + vAtt + vPcce;
+
+      document.getElementById('total').textContent = total.toFixed(2);
+
+      const [grade, gradeClass] = getGrade(total);
+      const badge = document.getElementById('grade-badge');
+      badge.textContent = grade;
+      badge.className = 'grade-badge ' + gradeClass;
+
+      const thresholds = [80, 70, 60, 50, 40, 30, 20, 10];
+      if (total >= 80) {
+        document.getElementById('hint').textContent = 'A+ 달성 조건을 충족합니다';
+      } else {
+        const toAp = 80 - total;
+        const nextUp = Math.min(...thresholds.filter(t => t > total));
+        const toNext = nextUp - total;
+        document.getElementById('hint').textContent =
+          `A+ 까지 ${toAp.toFixed(2)}점 부족  ·  다음 등급까지 ${toNext.toFixed(2)}점`;
+      }
+
+      setBar('bar-mid',  vMid,  35, '#378ADD');
+      setBar('bar-fin',  vFin,  40, '#1D9E75');
+      setBar('bar-hw',   vHw,   20, '#639922');
+      setBar('bar-att',  vAtt,  5,  '#BA7517');
+      setBar('bar-pcce', vPcce, 10, '#7F77DD', true);
+    }
+
+    document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
+    calc();
+  </script>
+</body>
+</html>

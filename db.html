@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>데이타베이스 성적 계산기</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Toggle */
+    .toggle {
+      position: relative;
+      display: inline-flex;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      background: var(--bg-tertiary);
+      transition: background 0.2s;
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle input:checked ~ .toggle-track { background: #1D9E75; }
+    .toggle input:checked ~ .toggle-track .toggle-thumb {
+      background: #fff;
+      transform: translateX(20px);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .toggle-state {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .toggle-pts {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+    }
+
+    .w60 { width: 60px !important; }
+
+    /* Range slider */
+    input[type=range] {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--bg-tertiary);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      padding: 0;
+      border: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text);
+      cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text);
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Subtotal line */
+    .section-subtotal {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+    }
+
+    /* Result sub */
+    .score-sub {
+      font-size: 13px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .result-divider {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin: 1rem 0;
+    }
+
+    /* CT special badge */
+    .ct-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+    .ct-badge-icon { font-size: 13px; flex-shrink: 0; }
+    .ct-badge.achieved { background: #EAF3DE; color: #3B6D11; }
+    .ct-badge.unachieved { background: var(--bg-secondary); color: var(--text-tertiary); }
+    @media (prefers-color-scheme: dark) {
+      .ct-badge.achieved { background: #173404; color: #C0DD97; }
+    }
+
+    /* Hint with top border */
+    .hint-text.bordered {
+      padding-top: 12px;
+      border-top: 0.5px solid var(--border);
+      margin-top: 12px;
+    }
+
+    /* Grade table */
+    .grade-table {
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .grade-table-title {
+      padding: 10px 14px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .grade-table-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-bottom: 0.5px solid var(--border);
+      transition: background 0.15s;
+    }
+    .grade-table-row.active { background: var(--bg-secondary); }
+    .grade-table-lbl {
+      width: 40px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .grade-table-bar { flex: 1; }
+    .grade-table-min {
+      width: 52px;
+      text-align: right;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+    .grade-table-notes {
+      padding: 8px 14px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+      line-height: 1.7;
+      border-top: 0.5px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">성적 계산기</a>
+    <div class="nav-links">
+      <a href="ds.html" class="nav-link">자료구조</a>
+      <a href="cpp.html" class="nav-link">C++</a>
+      <a href="db.html" class="nav-link active">데이타베이스</a>
+      <a href="wcc.html" class="nav-link">웹클라이언트</a>
+      <a href="https://dld2026.ysjoo-e6a.workers.dev/#/6" class="nav-link" target="_blank" rel="noopener">논리회로</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>데이타베이스</h1>
+      <p>국민대학교 소프트웨어융합대학 · 2026-1학기 · 절대평가</p>
+    </div>
+
+    <!-- SQL Coding Test -->
+    <p class="section-label">
+      SQL Coding Test (CT)
+      <span class="section-label-sub">기말시험 6/10(수) 18:00</span>
+    </p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">점수</span>
+          <div class="input-right">
+            <span class="input-max">/ 300</span>
+            <input type="number" id="ct" min="0" max="300" value="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리포트 -->
+    <p class="section-label">리포트 (RP)</p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">R1 리포트</span>
+          <div class="input-right">
+            <span class="input-max">/ 90</span>
+            <input type="number" id="r1" min="0" max="90" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">R2 리포트</span>
+          <div class="input-right">
+            <span class="input-max">/ 181</span>
+            <input type="number" id="r2" min="0" max="181" value="0">
+          </div>
+        </div>
+        <div class="subtotal-row">
+          <span class="subtotal-label">리포트 합계</span>
+          <span class="subtotal-val" id="rp-total-val">0 / 271</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SQLD -->
+    <p class="section-label">
+      SQLD 자격시험
+      <span class="section-label-sub">5/31(일)</span>
+    </p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">합격 여부</span>
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="sqld">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+          <span class="toggle-state" id="sqld-state">미응시 / 불합격</span>
+          <span class="toggle-pts" id="sqld-pts">+0점</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-subtotal">
+      <span id="main-subtotal">주요 소계 0 / 591</span>
+    </div>
+
+    <!-- 가점 요소 -->
+    <p class="section-label">가점 요소</p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">Slack 프로필 사진</span>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" id="slack" checked>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+            <span class="toggle-state" id="slack-state">등록</span>
+            <span class="toggle-pts" id="slack-pts">+10점</span>
+          </div>
+        </div>
+      </div>
+      <div class="input-card">
+        <div class="input-row" style="justify-content:flex-start;gap:12px;">
+          <span class="input-label" style="flex-shrink:0;">Q&amp;A 참여도</span>
+          <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+            <input type="range" id="qa-slider" min="0" max="10" step="2" value="0">
+            <span class="input-max">/ 10</span>
+            <input type="number" class="w60" id="qa" min="0" max="10" step="2" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">질문·답변 당 2점 · 최대 10점</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">출석 완벽</span>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" id="att-perfect">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+            <span class="toggle-state" id="att-state">지각·결석 있음</span>
+            <span class="toggle-pts" id="att-pts">+0점</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section-subtotal">
+      <span id="bonus-subtotal">가점 소계 10 / 30</span>
+    </div>
+
+    <!-- 결과 -->
+    <p class="section-label">결과</p>
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label">최종 성취도점수</div>
+          <div class="score-total" id="final-score">10</div>
+          <div class="score-sub" id="main-score-sub">주요 요소 0 / 591</div>
+        </div>
+        <div class="grade-badge grade-d" id="grade-badge">D</div>
+      </div>
+      <hr class="result-divider">
+      <div class="bar-section">
+        <div class="bar-row">
+          <span class="bar-label">CT</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-ct"></div></div>
+          <span class="bar-val" id="bar-ct-val">0 / 300</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">R1 리포트</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-r1"></div></div>
+          <span class="bar-val" id="bar-r1-val">0 / 90</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">R2 리포트</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-r2"></div></div>
+          <span class="bar-val" id="bar-r2-val">0 / 181</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">SQLD</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-sqld"></div></div>
+          <span class="bar-val" id="bar-sqld-val">0 / 20</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">가점</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
+          <span class="bar-val" id="bar-bonus-val">+10 / 30</span>
+        </div>
+      </div>
+      <div class="ct-badge unachieved" id="ct-badge">
+        <span class="ct-badge-icon">○</span>
+        <span id="ct-badge-text">CT 290점 이상 시 A+ 조건 — 현재 0점 (부족 290점)</span>
+      </div>
+      <div class="hint-text bordered" id="hint"></div>
+    </div>
+
+    <!-- 등급 기준표 -->
+    <p class="section-label">등급 기준</p>
+    <div class="grade-table">
+      <div class="grade-table-title">등급 기준 (최종 점수 합계 기준 · 절대평가)</div>
+      <div id="grade-rows"></div>
+      <div class="grade-table-notes">
+        CT 290↑ + 리포트 전제출 + 출석 F 아님 → A+ 자동 부여<br>
+        7회 이상 결석 시 F 처리 · 최종 기준은 리포트 평가 완료 후 재조정 예정
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div class="formula-text">
+        최종 성취도점수 = CT + 리포트 + SQLD(합격 시 +20) + 가점<br>
+        리포트: R1 최대 90점 + R2 최대 181점 = 271점 · SQLD 합격 시 +20점<br>
+        등급 기준: A+(550↑) · A0(480↑) · B+(410↑) · B0(320↑) · C+(200↑) · C0(100↑) · D(100↓)<br>
+        기말시험 6/10(수) 18:00 · SQLD 5/31(일)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function clamp(v, mn, mx) {
+      const n = parseInt(v, 10);
+      return isNaN(n) ? mn : Math.min(mx, Math.max(mn, n));
+    }
+
+    const GRADES = [
+      { label: 'A+', min: 550, cls: 'grade-ap', barColor: '#C0DD97' },
+      { label: 'A0', min: 480, cls: 'grade-a',  barColor: '#9FE1CB' },
+      { label: 'B+', min: 410, cls: 'grade-bp', barColor: '#B5D4F4' },
+      { label: 'B0', min: 320, cls: 'grade-b',  barColor: '#85B7EB' },
+      { label: 'C+', min: 200, cls: 'grade-cp', barColor: '#FAC775' },
+      { label: 'C0', min: 100, cls: 'grade-c',  barColor: '#EF9F27' },
+      { label: 'D',  min:   0, cls: 'grade-d',  barColor: '#F0997B' },
+    ];
+
+    function getGrade(score) {
+      for (const g of GRADES) if (score >= g.min) return g;
+      return GRADES[GRADES.length - 1];
+    }
+
+    // Build grade table rows
+    const gradeRowsEl = document.getElementById('grade-rows');
+    GRADES.forEach(g => {
+      const row = document.createElement('div');
+      row.className = 'grade-table-row';
+      row.id = 'gt-' + g.cls;
+      const minLabel = g.min === 0 ? '100점↓' : g.min + '점↑';
+      row.innerHTML =
+        `<span class="grade-table-lbl ${g.cls}">${g.label}</span>` +
+        `<div class="grade-table-bar bar-track"><div class="bar-fill" id="gtbar-${g.cls}" style="background:${g.barColor}"></div></div>` +
+        `<span class="grade-table-min">${minLabel}</span>`;
+      gradeRowsEl.appendChild(row);
+    });
+
+    function calc() {
+      const ct = clamp(document.getElementById('ct').value, 0, 300);
+      const r1 = clamp(document.getElementById('r1').value, 0, 90);
+      const r2 = clamp(document.getElementById('r2').value, 0, 181);
+      const rp = r1 + r2;
+      document.getElementById('rp-total-val').textContent = `${rp} / 271`;
+
+      const sqldOn = document.getElementById('sqld').checked;
+      const sqld = sqldOn ? 20 : 0;
+      document.getElementById('sqld-state').textContent = sqldOn ? '합격' : '미응시 / 불합격';
+      document.getElementById('sqld-pts').textContent   = sqldOn ? '+20점' : '+0점';
+
+      const mainTotal = ct + rp + sqld;
+      document.getElementById('main-subtotal').textContent = `주요 소계 ${mainTotal} / 591`;
+
+      const slackOn = document.getElementById('slack').checked;
+      const slack = slackOn ? 10 : 0;
+      document.getElementById('slack-state').textContent = slackOn ? '등록' : '미등록';
+      document.getElementById('slack-pts').textContent   = slackOn ? '+10점' : '+0점';
+
+      const qa = clamp(document.getElementById('qa').value, 0, 10);
+
+      const attOn = document.getElementById('att-perfect').checked;
+      const att = attOn ? 10 : 0;
+      document.getElementById('att-state').textContent = attOn ? '지각·결석 0회' : '지각·결석 있음';
+      document.getElementById('att-pts').textContent   = attOn ? '+10점' : '+0점';
+
+      const bonus = slack + qa + att;
+      document.getElementById('bonus-subtotal').textContent = `가점 소계 ${bonus} / 30`;
+
+      const finalTotal = mainTotal + bonus;
+      document.getElementById('final-score').textContent = finalTotal;
+      document.getElementById('main-score-sub').textContent = `주요 요소 ${mainTotal} / 591`;
+
+      const grade = getGrade(finalTotal);
+      const badge = document.getElementById('grade-badge');
+      badge.textContent = grade.label;
+      badge.className = 'grade-badge ' + grade.cls;
+
+      setBar('bar-ct',    ct,    300, '#378ADD');
+      setBar('bar-r1',    r1,     90, '#1D9E75');
+      setBar('bar-r2',    r2,    181, '#25B88D');
+      setBar('bar-sqld',  sqld,   20, '#7F77DD');
+      setBar('bar-bonus', bonus,  30, '#BA7517', true);
+
+      // CT special badge
+      const ctBadge = document.getElementById('ct-badge');
+      if (ct >= 290) {
+        ctBadge.className = 'ct-badge achieved';
+        ctBadge.querySelector('.ct-badge-icon').textContent = '✓';
+        document.getElementById('ct-badge-text').textContent =
+          'CT 290점 이상 달성 — 리포트 전제출 + 출석 조건 충족 시 A+ 자동 부여';
+      } else {
+        ctBadge.className = 'ct-badge unachieved';
+        ctBadge.querySelector('.ct-badge-icon').textContent = '○';
+        document.getElementById('ct-badge-text').textContent =
+          `CT 290점 이상 시 A+ 조건 — 현재 ${ct}점 (부족 ${290 - ct}점)`;
+      }
+
+      // Hint
+      const hint = document.getElementById('hint');
+      if (finalTotal >= 550) {
+        hint.textContent = `A+ 달성 조건을 충족합니다 (총점 ${finalTotal}점)`;
+      } else {
+        const toAp = 550 - finalTotal;
+        const idx = GRADES.findIndex(g => finalTotal >= g.min);
+        const toNext = idx > 0 ? GRADES[idx - 1].min - finalTotal : 0;
+        hint.textContent = `A+ 까지 ${toAp}점 부족  ·  다음 등급까지 ${toNext}점`;
+      }
+
+      // Grade table
+      const pct = Math.min(finalTotal / 621, 1) * 100;
+      GRADES.forEach(g => {
+        document.getElementById('gt-' + g.cls).classList.toggle('active', g.cls === grade.cls);
+        document.getElementById('gtbar-' + g.cls).style.width = pct + '%';
+      });
+    }
+
+    function setBar(id, val, max, color, isBonus = false) {
+      document.getElementById(id).style.cssText = `width:${Math.min(val/max,1)*100}%;background:${color}`;
+      document.getElementById(id + '-val').textContent = isBonus ? `+${val} / ${max}` : `${val} / ${max}`;
+    }
+
+    document.getElementById('ct').addEventListener('input', calc);
+
+    // Q&A slider ↔ number sync
+    document.getElementById('qa-slider').addEventListener('input', function () {
+      document.getElementById('qa').value = this.value;
+      calc();
+    });
+    document.getElementById('qa').addEventListener('input', function () {
+      const snapped = Math.round(clamp(this.value, 0, 10) / 2) * 2;
+      document.getElementById('qa-slider').value = snapped;
+      calc();
+    });
+
+    ['sqld', 'slack', 'att-perfect'].forEach(id => {
+      document.getElementById(id).addEventListener('change', calc);
+    });
+    document.getElementById('r1').addEventListener('input', calc);
+    document.getElementById('r2').addEventListener('input', calc);
+
+    calc();
+  </script>
+</body>
+</html>
