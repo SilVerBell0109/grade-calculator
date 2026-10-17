@@ -32,4 +32,4 @@ grade-calculator-theta-taupe.vercel.app 의 기존 5과목(2026-1) 내용을 모
 - [x] 계산 검증 (headless Chrome: 기본 45.00/C, 사례 94.25/A+·A+에 기말 84.4 필요, 계획서 기준 95.50, 오류 0)
 - [x] GitHub 저장소 생성·푸시: https://github.com/SilVerBell0109/grade-calculator (public, master)
 - [x] vercel deploy --prod → grade-calculator-theta-taupe.vercel.app 별칭 갱신, 구 페이지 404·*.md 비공개 확인
-- 참고: Vercel 프로젝트는 Git 연동 안 됨 → 수정 후 `vercel deploy --prod` 로 다시 배포 (원하면 `vercel git connect`)
+- [x] Vercel ↔ GitHub 연동 (`vercel git connect`, 프로덕션 브랜치 master) → master 에 push 하면 자동 프로덕션 배포
