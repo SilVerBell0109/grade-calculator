@@ -33,3 +33,10 @@ grade-calculator-theta-taupe.vercel.app 의 기존 5과목(2026-1) 내용을 모
 - [x] GitHub 저장소 생성·푸시: https://github.com/SilVerBell0109/grade-calculator (public, master)
 - [x] vercel deploy --prod → grade-calculator-theta-taupe.vercel.app 별칭 갱신, 구 페이지 404·*.md 비공개 확인
 - [x] Vercel ↔ GitHub 연동 (`vercel git connect`, 프로덕션 브랜치 master) → master 에 push 하면 자동 프로덕션 배포
+
+## 2차 수정 (2026-10-17)
+- 사용자 결정: 반영 비율은 수업계획서 기준(20/20/45/5/5/5)으로 고정 → 강의자료 토글 제거, 수업참여도 항상 표시
+- ICPC 가산점 (ICPC안내.pdf p.4, 재공지 p.5 동일): 참가 +5점, 지역 본선 진출 +10점
+  - 누적(15점)이 아니라 단계(최대 10점)로 해석 → 미참가/참가/본선 3단 선택
+  - 일정: 지역예선 10/16–17, 지역 본선 11/13–14
+- 검증: 기본 55.00/C+, 사례 95.50 → ICPC +5 100.50, +10 105.50, 역산 손계산 일치, 콘솔 오류 0
