@@ -31,7 +31,7 @@
         <span>중간 <b>20</b></span><span>기말 <b>20</b></span><span>과제 <b>45</b></span>
         <span>출석 <b>5</b></span><span>수업참여도 <b>5</b></span><span>PCCP <b>5</b></span>
       </div>
-      <div class="convert-hint">+ 추가점수: 향상분 · 채점서버 Q&amp;A 최대 10 · ICPC 최대 10</div>
+      <div class="convert-hint">+ 추가점수: 향상분 · 채점서버 Q&amp;A 최대 10 · ICPC 최대 15</div>
     </div>
 
     <!-- 중간고사 -->
@@ -153,7 +153,7 @@
         <div class="seg-group seg-compact" id="icpc-group">
           <button type="button" class="seg-btn active" data-icpc="0">미참가</button>
           <button type="button" class="seg-btn" data-icpc="5">참가 +5</button>
-          <button type="button" class="seg-btn" data-icpc="10">본선 +10</button>
+          <button type="button" class="seg-btn" data-icpc="15">본선 +15</button>
         </div>
         <div class="convert-hint">예선 10/16–17 · 지역 본선 11/13–14</div>
       </div>
@@ -253,7 +253,7 @@
       <div class="formula-text">
         총점 = 중간×0.2 + 기말×0.2 + 과제%×0.45 + 출석 + 수업참여도 + PCCP/1000×5 + 추가점수<br>
         향상분 보너스 = max(0, 기말합계 − 중간합계) × 0.5 &nbsp;·&nbsp; 채점서버 보너스 최대 +10점 (교수님 재량)<br>
-        ICPC 가산점 = 참가 +5 / 지역 본선 진출 +10 (ICPC 신청 안내)<br>
+        ICPC 가산점 = 참가 +5, 지역 본선 진출 시 +10 추가 (합계 +15) · ICPC 신청 안내<br>
         출처: 2026-2 수업계획서 · 강의진행개요(lecture01) · ICPC 신청 안내
       </div>
     </div>
@@ -358,7 +358,7 @@
       setBar('bar-part',   vPart,   W.part, '#D4537E');
       setBar('bar-pccp',   vPccp,   W.pccp, '#7F77DD');
       setBar('bar-server', vServer, 10,     '#E05A5A', { prefix: true, noMax: true });
-      setBar('bar-icpc',   vIcpc,   10,     '#2F9FB0', { prefix: true, noMax: true });
+      setBar('bar-icpc',   vIcpc,   15,     '#2F9FB0', { prefix: true, noMax: true });
 
       renderGoals(base, W.fin / 100, midTotal);
     }
