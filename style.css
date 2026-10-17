@@ -319,95 +319,56 @@ input[type=number]::-webkit-inner-spin-button {
   line-height: 1.9;
 }
 
-/* ── Result meta (dld rank breakdown) ── */
-.result-meta {
+/* ── Segmented control (preset) ── */
+.seg-group {
   display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-.result-meta b {
-  color: var(--text);
-  font-family: var(--font-mono);
+  gap: 2px;
+  background: var(--bg-secondary);
+  border-radius: 7px;
+  padding: 2px;
+  width: 100%;
 }
 
-/* ── External link card ── */
-.ext-card {
+.seg-btn {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: color 0.1s, background 0.1s;
+}
+
+.seg-btn:hover { color: var(--text); }
+.seg-btn.active { color: var(--text); font-weight: 500; background: var(--bg); box-shadow: 0 0 0 0.5px var(--border-strong); }
+
+/* ── Goal (기말 역산) ── */
+.goal-list { display: flex; flex-direction: column; gap: 8px; }
+
+.goal-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  text-decoration: none;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 500;
-  transition: border-color 0.15s, background 0.1s;
-}
-.ext-card:hover { border-color: var(--border-strong); background: var(--bg-secondary); }
-.ext-card-sub { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
-
-/* ── Index: subject grid ── */
-.index-header { text-align: center; padding: 2rem 0 0.5rem; }
-.index-header h1 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
-.index-header p { font-size: 13px; color: var(--text-secondary); }
-
-.subject-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 12px;
-  margin-top: 1.5rem;
+  gap: 10px;
 }
 
-.subject-card {
-  background: var(--bg);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  text-decoration: none;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.15s, box-shadow 0.15s;
+.goal-text { font-size: 13px; color: var(--text-secondary); text-align: right; }
+.goal-text b { font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--text); }
+.goal-ok { color: #3B6D11; }
+.goal-no { color: #A32D2D; }
+.goal-note { margin-top: 12px; }
+
+@media (prefers-color-scheme: dark) {
+  .goal-ok { color: #C0DD97; }
+  .goal-no { color: #F7C1C1; }
 }
 
-.subject-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-}
+.grade-chip.current { box-shadow: 0 0 0 1.5px currentColor; font-weight: 600; }
 
-.subject-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-
-.subject-summary {
-  list-style: none;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 1rem;
-}
-
-.subject-summary li { font-size: 12px; color: var(--text-secondary); }
-
-.subject-summary .summary-note {
-  font-size: 11px;
-  color: var(--text-tertiary);
-  margin-top: 4px;
-}
-
-.card-btn {
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--bg-secondary);
-  border-radius: 6px;
-  padding: 8px 0;
-  text-align: center;
-  color: var(--text);
-}
+.hidden { display: none !important; }
 
 /* ── 2-col grid for inputs ── */
 .input-grid-2 {
@@ -418,7 +379,6 @@ input[type=number]::-webkit-inner-spin-button {
 
 /* ── Responsive ── */
 @media (max-width: 520px) {
-  .subject-grid { grid-template-columns: 1fr; }
   .input-grid-2 { grid-template-columns: 1fr; }
   .score-total { font-size: 40px; }
   .bar-label { width: 90px; }

@@ -3,94 +3,364 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>성적 계산기 — 국민대 소융대 2026-1</title>
+  <title>알고리즘 성적 계산기</title>
+  <meta name="description" content="국민대 소프트웨어융합대학 알고리즘(최준수 교수) 2026-2학기 성적 계산기">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav class="nav">
     <a class="nav-brand" href="index.html">성적 계산기</a>
     <div class="nav-links">
-      <a href="ds.html" class="nav-link">자료구조</a>
-      <a href="cpp.html" class="nav-link">C++</a>
-      <a href="db.html" class="nav-link">데이타베이스</a>
-      <a href="wcc.html" class="nav-link">웹클라이언트</a>
-      <a href="https://dld2026.ysjoo-e6a.workers.dev/#/6" class="nav-link" target="_blank" rel="noopener">논리회로</a>
+      <a href="index.html" class="nav-link active">알고리즘</a>
     </div>
   </nav>
 
   <div class="container">
-    <div class="index-header">
-      <h1>성적 계산기</h1>
-      <p>국민대학교 소프트웨어융합대학 · 2026-1학기</p>
+    <div class="page-header">
+      <h1>알고리즘</h1>
+      <p>최준수 교수 · 국민대학교 소프트웨어융합대학 · 2026-2학기 · 성취기반(절대) 평가</p>
     </div>
 
-    <div class="subject-grid">
-      <a class="subject-card" href="ds.html">
-        <h2>자료구조</h2>
-        <ul class="subject-summary">
-          <li>중간고사 · 35%</li>
-          <li>기말고사 · 40%</li>
-          <li>과제물 · 20%</li>
-          <li>출석 · 5점</li>
-          <li>PCCE 보너스 · 최대 +10점</li>
-          <li class="summary-note">이상환 교수 · 절대평가 ABF 제도</li>
-        </ul>
-        <div class="card-btn">계산하기 →</div>
-      </a>
+    <!-- 반영 비율 기준 -->
+    <p class="section-label">반영 비율</p>
+    <div class="input-card">
+      <div class="input-row">
+        <div class="seg-group" id="preset-group">
+          <button type="button" class="seg-btn active" data-preset="lecture">강의자료 기준</button>
+          <button type="button" class="seg-btn" data-preset="syllabus">수업계획서 기준</button>
+        </div>
+      </div>
+      <div class="convert-hint" id="weights-summary"></div>
+      <div class="convert-hint">두 자료의 비율이 다릅니다 · 중간고사 성적 발표 후 재조정 공지 예정 (강의자료 p.5)</div>
+    </div>
 
-      <a class="subject-card" href="cpp.html">
-        <h2>C++ 프로그래밍</h2>
-        <ul class="subject-summary">
-          <li>중간고사 · 20%</li>
-          <li>기말고사 · 20%</li>
-          <li>향상분 보너스 · max(0, 기말−중간)×0.5</li>
-          <li>과제물 (알고랩) · 35%</li>
-          <li>프로젝트 (Snake) · 15%</li>
-          <li>출석 · 5% &nbsp;·&nbsp; PCCE · 5%</li>
-          <li class="summary-note">절대평가 · 기말 6/11(목) 18:00</li>
-        </ul>
-        <div class="card-btn">계산하기 →</div>
-      </a>
+    <!-- 중간고사 -->
+    <p class="section-label">
+      중간고사
+      <span class="section-label-sub">10/21(수) 18:00 · ×<span id="w-mid">25</span>%</span>
+    </p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">단답형</span>
+          <div class="input-right">
+            <span class="input-max">/ 40</span>
+            <input type="number" id="mid-short" min="0" max="40" step="0.5" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">코딩 (4문제)</span>
+          <div class="input-right">
+            <span class="input-max">/ 60</span>
+            <input type="number" id="mid-code" min="0" max="60" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="subtotal-row">
+          <span class="subtotal-label">중간합계</span>
+          <span class="subtotal-val" id="mid-total-val">0 / 100</span>
+        </div>
+      </div>
+    </div>
 
-      <a class="subject-card" href="db.html">
-        <h2>데이타베이스</h2>
-        <ul class="subject-summary">
-          <li>SQL Coding Test · 300점</li>
-          <li>리포트 (R1·R2) · 271점</li>
-          <li>SQLD 합격 · +20점</li>
-          <li>가점 (Slack·Q&amp;A·출석) · 최대 +30점</li>
-          <li>CT 290↑ + 리포트 전제출 → A+ 자동 부여</li>
-          <li class="summary-note">절대평가 · 기말시험 6/10(수) 18:00</li>
-        </ul>
-        <div class="card-btn">계산하기 →</div>
-      </a>
+    <!-- 기말고사 -->
+    <p class="section-label">
+      기말고사
+      <span class="section-label-sub">12/9(수) 18:00 · ×<span id="w-fin">25</span>%</span>
+    </p>
+    <div class="input-stack">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">단답형</span>
+          <div class="input-right">
+            <span class="input-max">/ 40</span>
+            <input type="number" id="fin-short" min="0" max="40" step="0.5" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">코딩 (4문제)</span>
+          <div class="input-right">
+            <span class="input-max">/ 60</span>
+            <input type="number" id="fin-code" min="0" max="60" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="subtotal-row">
+          <span class="subtotal-label">기말합계</span>
+          <span class="subtotal-val" id="fin-total-val">0 / 100</span>
+        </div>
+      </div>
+    </div>
 
-      <a class="subject-card" href="wcc.html">
-        <h2>웹클라이언트컴퓨팅</h2>
-        <ul class="subject-summary">
-          <li>중간고사 · 20%</li>
-          <li>기말고사 · 20%</li>
-          <li>프로젝트 (HTML/CSS/JS) · 35%</li>
-          <li>과제물 · 15%</li>
-          <li>출석 · 10%</li>
-          <li class="summary-note">이다원 교수 · 절대평가 · 기말 6/2~6/4</li>
-        </ul>
-        <div class="card-btn">계산하기 →</div>
-      </a>
+    <!-- 기타 항목 -->
+    <p class="section-label">과제 · 출석 · 기타</p>
+    <div class="input-grid-2">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">코딩과제 (알고랩 %)</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="hw" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+        <div class="convert-hint">100점 받은 문제 ÷ 전체 문제 · ×<span id="w-hw">40</span>%</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">출석</span>
+          <div class="input-right">
+            <span class="input-max">/ 5</span>
+            <input type="number" id="att" min="0" max="5" step="0.1" value="5">
+          </div>
+        </div>
+        <div class="convert-hint">9/8부터 반영 · 지각 3회 = 결석 1회</div>
+      </div>
+      <div class="input-card hidden" id="part-card">
+        <div class="input-row">
+          <span class="input-label">수업참여도</span>
+          <div class="input-right">
+            <span class="input-max">/ 5</span>
+            <input type="number" id="part" min="0" max="5" step="0.1" value="5">
+          </div>
+        </div>
+        <div class="convert-hint">수업계획서 기준에만 있는 항목</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">PCCP</span>
+          <div class="input-right">
+            <span class="input-max">/ 1000</span>
+            <input type="number" id="pccp" min="0" max="1000" step="1" value="0">
+          </div>
+        </div>
+        <div class="convert-hint" id="pccp-hint">11/15(토) 14:00 · 1000점 = +5</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">채점서버 Q&amp;A 보너스</span>
+          <div class="input-right">
+            <span class="input-max">/ 10</span>
+            <input type="number" id="server" min="0" max="10" step="0.1" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">질문·답변 횟수 기반 · 교수님 재량</div>
+      </div>
+    </div>
 
-      <a class="subject-card" href="https://dld2026.ysjoo-e6a.workers.dev/#/6" target="_blank" rel="noopener">
-        <h2>논리회로설계</h2>
-        <ul class="subject-summary">
-          <li>중간고사 · 40점</li>
-          <li>기말고사 · 40점</li>
-          <li>출석 · 10점 &nbsp;·&nbsp; 과제 · 10점</li>
-          <li>도전과제 보너스 · 최대 +23점</li>
-          <li>석차 기반 상대평가</li>
-          <li class="summary-note">주용수 교수 · 상대평가 ABF 제도</li>
-        </ul>
-        <div class="card-btn">계산하기 →</div>
-      </a>
+    <!-- 결과 -->
+    <p class="section-label">결과</p>
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label">총점</div>
+          <div class="score-total" id="total">0.00</div>
+        </div>
+        <div class="grade-badge grade-f" id="grade-badge">F</div>
+      </div>
+      <div class="hint-text" id="hint"></div>
+    </div>
+
+    <!-- 점수 구성 바 차트 -->
+    <p class="section-label">점수 구성</p>
+    <div class="result-card">
+      <div class="bar-section">
+        <div class="bar-row">
+          <span class="bar-label">중간고사</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-mid"></div></div>
+          <span class="bar-val" id="bar-mid-val">0.0 / 25</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">기말고사</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-fin"></div></div>
+          <span class="bar-val" id="bar-fin-val">0.0 / 25</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">향상분 보너스</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
+          <span class="bar-val" id="bar-bonus-val">+0.0</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">코딩과제</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-hw"></div></div>
+          <span class="bar-val" id="bar-hw-val">0.0 / 40</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">출석</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-att"></div></div>
+          <span class="bar-val" id="bar-att-val">0.0 / 5</span>
+        </div>
+        <div class="bar-row hidden" id="bar-part-row">
+          <span class="bar-label">수업참여도</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-part"></div></div>
+          <span class="bar-val" id="bar-part-val">0.0 / 5</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">PCCP</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-pccp"></div></div>
+          <span class="bar-val" id="bar-pccp-val">0.0 / 5</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">채점서버 보너스</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-server"></div></div>
+          <span class="bar-val" id="bar-server-val">+0.0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기말 목표 역산 -->
+    <p class="section-label">
+      기말 목표 역산
+      <span class="section-label-sub">기말 입력값 대신, 등급별로 필요한 기말 점수</span>
+    </p>
+    <div class="result-card">
+      <div class="goal-list" id="goal-list"></div>
+      <div class="convert-hint goal-note">향상분 보너스 포함 · 중간·과제·출석 등 다른 항목은 위 입력값 그대로 가정</div>
+    </div>
+
+    <!-- 등급 기준 -->
+    <p class="section-label">등급 기준 (성취기반 평가)</p>
+    <div class="grade-chips" id="grade-chips">
+      <div class="grade-chip grade-ap" data-grade="A+">A+ <span class="threshold">90↑</span></div>
+      <div class="grade-chip grade-a" data-grade="A">A <span class="threshold">80↑</span></div>
+      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">70↑</span></div>
+      <div class="grade-chip grade-b" data-grade="B">B <span class="threshold">60↑</span></div>
+      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">50↑</span></div>
+      <div class="grade-chip grade-c" data-grade="C">C <span class="threshold">40↑</span></div>
+      <div class="grade-chip grade-dp" data-grade="D+">D+ <span class="threshold">30↑</span></div>
+      <div class="grade-chip grade-d" data-grade="D">D <span class="threshold">20↑</span></div>
+      <div class="grade-chip grade-f" data-grade="F">F <span class="threshold">20↓</span></div>
+    </div>
+    <p class="grade-note">결석이 수업시간의 1/4(11.25시간) 이상이면 점수와 관계없이 F · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정</p>
+
+    <div class="page-footer">
+      <div class="formula-text">
+        총점 = 중간×w + 기말×w + 과제%×w + 출석 + PCCP/1000×5 + 향상분 + 채점서버 보너스<br>
+        향상분 보너스 = max(0, 기말합계 − 중간합계) × 0.5 &nbsp;·&nbsp; 채점서버 보너스 최대 +10점 (교수님 재량)<br>
+        출처: 강의진행개요(lecture01) · 2026-2 수업계획서
+      </div>
     </div>
   </div>
+
+  <script>
+    const PRESETS = {
+      lecture:  { mid: 25, fin: 25, hw: 40, att: 5, part: 0, pccp: 5 },
+      syllabus: { mid: 20, fin: 20, hw: 45, att: 5, part: 5, pccp: 5 },
+    };
+    const GRADES = [
+      [90, 'A+', 'grade-ap'], [80, 'A', 'grade-a'], [70, 'B+', 'grade-bp'],
+      [60, 'B', 'grade-b'], [50, 'C+', 'grade-cp'], [40, 'C', 'grade-c'],
+      [30, 'D+', 'grade-dp'], [20, 'D', 'grade-d'],
+    ];
+    const GOAL_TARGETS = GRADES.slice(0, 5); // A+ ~ C+
+    let W = PRESETS.lecture;
+
+    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
+    function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
+    function setText(id, text) { document.getElementById(id).textContent = text; }
+
+    function getGrade(s) {
+      for (const [min, label, cls] of GRADES) if (s >= min) return [label, cls];
+      return ['F', 'grade-f'];
+    }
+
+    function setBar(id, v, max, color, opts = {}) {
+      const fill = document.getElementById(id);
+      fill.style.width = (max > 0 ? Math.min(v / max, 1) * 100 : 0) + '%';
+      fill.style.background = color;
+      const pfx = opts.prefix ? '+' : '';
+      const sfx = opts.noMax  ? '' : ` / ${max}`;
+      setText(id + '-val', `${pfx}${v.toFixed(1)}${sfx}`);
+    }
+
+    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f.
+    // total(f) = base + wf·f + 0.5·max(0, f − mid) 은 f에 대해 증가하는 꺾은선이다.
+    function neededFinal(target, base, wf, mid) {
+      if (base >= target) return 0;
+      const f1 = (target - base) / wf;
+      const f = f1 <= mid ? f1 : (target - base + 0.5 * mid) / (wf + 0.5);
+      return f > 100 ? null : f;
+    }
+
+    function renderGoals(base, wf, mid) {
+      const maxTotal = base + wf * 100 + 0.5 * Math.max(0, 100 - mid);
+      document.getElementById('goal-list').innerHTML = GOAL_TARGETS.map(([min, label, cls]) => {
+        const f = neededFinal(min, base, wf, mid);
+        let text;
+        if (f === 0)        text = '<span class="goal-ok">기말 0점이어도 달성</span>';
+        else if (f === null) text = `<span class="goal-no">기말 만점이어도 ${maxTotal.toFixed(1)}점 · 불가</span>`;
+        else                text = `기말 <b>${(Math.ceil(f * 10 - 1e-9) / 10).toFixed(1)}</b>점 이상`;
+        return `<div class="goal-row"><span class="grade-chip ${cls}">${label} <span class="threshold">${min}↑</span></span><span class="goal-text">${text}</span></div>`;
+      }).join('');
+    }
+
+    function applyPreset(key) {
+      W = PRESETS[key];
+      document.querySelectorAll('#preset-group .seg-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.preset === key));
+      setText('w-mid', W.mid);
+      setText('w-fin', W.fin);
+      setText('w-hw', W.hw);
+      const parts = [`중간 ${W.mid}`, `기말 ${W.fin}`, `과제 ${W.hw}`, `출석 ${W.att}`];
+      if (W.part) parts.push(`수업참여도 ${W.part}`);
+      parts.push(`PCCP ${W.pccp}`);
+      setText('weights-summary', parts.join(' · ') + ' (%)');
+      document.getElementById('part-card').classList.toggle('hidden', !W.part);
+      document.getElementById('bar-part-row').classList.toggle('hidden', !W.part);
+      calc();
+    }
+
+    function calc() {
+      const midTotal = val('mid-short', 0, 40) + val('mid-code', 0, 60);
+      const finTotal = val('fin-short', 0, 40) + val('fin-code', 0, 60);
+      setText('mid-total-val', `${midTotal} / 100`);
+      setText('fin-total-val', `${finTotal} / 100`);
+
+      const vMid    = midTotal * W.mid / 100;
+      const vFin    = finTotal * W.fin / 100;
+      const vBonus  = Math.max(0, finTotal - midTotal) * 0.5;
+      const vHw     = val('hw', 0, 100) * W.hw / 100;
+      const vAtt    = val('att', 0, 5) / 5 * W.att;
+      const vPart   = val('part', 0, 5) / 5 * W.part;
+      const vPccp   = val('pccp', 0, 1000) / 1000 * W.pccp;
+      const vServer = val('server', 0, 10);
+      const base    = vMid + vHw + vAtt + vPart + vPccp + vServer; // 기말·향상분 제외
+      const total   = base + vFin + vBonus;
+
+      setText('total', total.toFixed(2));
+      setText('pccp-hint', `11/15(토) 14:00 · +${vPccp.toFixed(2)}점 반영`);
+
+      const [grade, gradeClass] = getGrade(total);
+      const badge = document.getElementById('grade-badge');
+      badge.textContent = grade;
+      badge.className = 'grade-badge ' + gradeClass;
+      document.querySelectorAll('#grade-chips .grade-chip').forEach(c =>
+        c.classList.toggle('current', c.dataset.grade === grade));
+
+      if (total >= 90) {
+        setText('hint', 'A+ 기준(90점)을 충족합니다');
+      } else {
+        const nextUp = Math.min(...GRADES.map(g => g[0]).filter(t => t > total));
+        setText('hint', `A+ 까지 ${(90 - total).toFixed(1)}점 부족  ·  다음 등급까지 ${(nextUp - total).toFixed(1)}점`);
+      }
+
+      setBar('bar-mid',    vMid,    W.mid,  '#378ADD');
+      setBar('bar-fin',    vFin,    W.fin,  '#1D9E75');
+      setBar('bar-bonus',  vBonus,  20,     '#EF9F27', { prefix: true, noMax: true });
+      setBar('bar-hw',     vHw,     W.hw,   '#639922');
+      setBar('bar-att',    vAtt,    W.att,  '#BA7517');
+      setBar('bar-part',   vPart,   W.part, '#D4537E');
+      setBar('bar-pccp',   vPccp,   W.pccp, '#7F77DD');
+      setBar('bar-server', vServer, 10,     '#E05A5A', { prefix: true, noMax: true });
+
+      renderGoals(base, W.fin / 100, midTotal);
+    }
+
+    document.querySelectorAll('#preset-group .seg-btn').forEach(b =>
+      b.addEventListener('click', () => applyPreset(b.dataset.preset)));
+    document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
+    applyPreset('lecture');
+  </script>
 </body>
 </html>
