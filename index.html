@@ -24,12 +24,12 @@
     <!-- 반영 비율 -->
     <p class="section-label">
       반영 비율
-      <span class="section-label-sub">2026-2 수업계획서 기준</span>
+      <span class="section-label-sub">강의자료(lecture01) 기준</span>
     </p>
     <div class="input-card">
       <div class="weights-row">
-        <span>중간 <b>20</b></span><span>기말 <b>20</b></span><span>과제 <b>45</b></span>
-        <span>출석 <b>5</b></span><span>수업참여도 <b>5</b></span><span>PCCP <b>5</b></span>
+        <span>중간 <b>25</b></span><span>기말 <b>25</b></span><span>과제 <b>40</b></span>
+        <span>출석 <b>5</b></span><span>PCCP <b>5</b></span>
       </div>
       <div class="convert-hint">+ 추가점수: 향상분 · 채점서버 Q&amp;A 최대 10 · ICPC 최대 15</div>
     </div>
@@ -37,7 +37,7 @@
     <!-- 중간고사 -->
     <p class="section-label">
       중간고사
-      <span class="section-label-sub">10/21(수) 18:00 · ×20%</span>
+      <span class="section-label-sub">10/21(수) 18:00 · ×25%</span>
     </p>
     <div class="input-stack">
       <div class="input-card">
@@ -67,7 +67,7 @@
     <!-- 기말고사 -->
     <p class="section-label">
       기말고사
-      <span class="section-label-sub">12/9(수) 18:00 · ×20%</span>
+      <span class="section-label-sub">12/9(수) 18:00 · ×25%</span>
     </p>
     <div class="input-stack">
       <div class="input-card">
@@ -105,7 +105,7 @@
             <input type="number" id="hw" min="0" max="100" step="1" value="100">
           </div>
         </div>
-        <div class="convert-hint">100점 받은 문제 ÷ 전체 문제 · ×45%</div>
+        <div class="convert-hint">100점 받은 문제 ÷ 전체 문제 · ×40%</div>
       </div>
       <div class="input-card">
         <div class="input-row">
@@ -116,15 +116,6 @@
           </div>
         </div>
         <div class="convert-hint">9/8부터 반영 · 지각 3회 = 결석 1회</div>
-      </div>
-      <div class="input-card">
-        <div class="input-row">
-          <span class="input-label">수업참여도</span>
-          <div class="input-right">
-            <span class="input-max">/ 5</span>
-            <input type="number" id="part" min="0" max="5" step="0.1" value="5">
-          </div>
-        </div>
       </div>
       <div class="input-card">
         <div class="input-row">
@@ -146,7 +137,7 @@
         </div>
         <div class="convert-hint">질문·답변 횟수 기반 · 교수님 재량</div>
       </div>
-      <div class="input-card">
+      <div class="input-card span-2">
         <div class="input-row">
           <span class="input-label">ICPC 가산점</span>
         </div>
@@ -179,12 +170,12 @@
         <div class="bar-row">
           <span class="bar-label">중간고사</span>
           <div class="bar-track"><div class="bar-fill" id="bar-mid"></div></div>
-          <span class="bar-val" id="bar-mid-val">0.0 / 20</span>
+          <span class="bar-val" id="bar-mid-val">0.0 / 25</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">기말고사</span>
           <div class="bar-track"><div class="bar-fill" id="bar-fin"></div></div>
-          <span class="bar-val" id="bar-fin-val">0.0 / 20</span>
+          <span class="bar-val" id="bar-fin-val">0.0 / 25</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">향상분 보너스</span>
@@ -194,17 +185,12 @@
         <div class="bar-row">
           <span class="bar-label">코딩과제</span>
           <div class="bar-track"><div class="bar-fill" id="bar-hw"></div></div>
-          <span class="bar-val" id="bar-hw-val">0.0 / 45</span>
+          <span class="bar-val" id="bar-hw-val">0.0 / 40</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">출석</span>
           <div class="bar-track"><div class="bar-fill" id="bar-att"></div></div>
           <span class="bar-val" id="bar-att-val">0.0 / 5</span>
-        </div>
-        <div class="bar-row">
-          <span class="bar-label">수업참여도</span>
-          <div class="bar-track"><div class="bar-fill" id="bar-part"></div></div>
-          <span class="bar-val" id="bar-part-val">0.0 / 5</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">PCCP</span>
@@ -251,16 +237,16 @@
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.2 + 기말×0.2 + 과제%×0.45 + 출석 + 수업참여도 + PCCP/1000×5 + 추가점수<br>
+        총점 = 중간×0.25 + 기말×0.25 + 과제%×0.4 + 출석 + PCCP/1000×5 + 추가점수<br>
         향상분 보너스 = max(0, 기말합계 − 중간합계) × 0.5 &nbsp;·&nbsp; 채점서버 보너스 최대 +10점 (교수님 재량)<br>
         ICPC 가산점 = 참가 +5, 지역 본선 진출 시 +10 추가 (합계 +15) · ICPC 신청 안내<br>
-        출처: 2026-2 수업계획서 · 강의진행개요(lecture01) · ICPC 신청 안내
+        출처: 강의진행개요(lecture01) p.4–5 · ICPC 신청 안내
       </div>
     </div>
   </div>
 
   <script>
-    const W = { mid: 20, fin: 20, hw: 45, att: 5, part: 5, pccp: 5 }; // 2026-2 수업계획서
+    const W = { mid: 25, fin: 25, hw: 40, att: 5, pccp: 5 }; // 강의자료 lecture01
     const GRADES = [
       [90, 'A+', 'grade-ap'], [80, 'A', 'grade-a'], [70, 'B+', 'grade-bp'],
       [60, 'B', 'grade-b'], [50, 'C+', 'grade-cp'], [40, 'C', 'grade-c'],
@@ -326,11 +312,10 @@
       const vBonus  = Math.max(0, finTotal - midTotal) * 0.5;
       const vHw     = val('hw', 0, 100) * W.hw / 100;
       const vAtt    = val('att', 0, 5) / 5 * W.att;
-      const vPart   = val('part', 0, 5) / 5 * W.part;
       const vPccp   = val('pccp', 0, 1000) / 1000 * W.pccp;
       const vServer = val('server', 0, 10);
       const vIcpc   = icpc;
-      const base    = vMid + vHw + vAtt + vPart + vPccp + vServer + vIcpc; // 기말·향상분 제외
+      const base    = vMid + vHw + vAtt + vPccp + vServer + vIcpc; // 기말·향상분 제외
       const total   = base + vFin + vBonus;
 
       setText('total', total.toFixed(2));
@@ -355,7 +340,6 @@
       setBar('bar-bonus',  vBonus,  20,     '#EF9F27', { prefix: true, noMax: true });
       setBar('bar-hw',     vHw,     W.hw,   '#639922');
       setBar('bar-att',    vAtt,    W.att,  '#BA7517');
-      setBar('bar-part',   vPart,   W.part, '#D4537E');
       setBar('bar-pccp',   vPccp,   W.pccp, '#7F77DD');
       setBar('bar-server', vServer, 10,     '#E05A5A', { prefix: true, noMax: true });
       setBar('bar-icpc',   vIcpc,   15,     '#2F9FB0', { prefix: true, noMax: true });
