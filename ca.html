@@ -33,6 +33,7 @@
         <span>HW <b>20</b></span><span>출석 <b>0</b></span>
       </div>
       <div class="convert-hint">과제 50% = 프로젝트(Lab) 30 + 과제물(HW) 20 · 출석은 반영하지 않음</div>
+      <div class="convert-hint">+ 향상분 보너스 (가중치 미공지 · 직접 입력)</div>
     </div>
 
     <!-- 시험 -->
@@ -57,6 +58,16 @@
           </div>
         </div>
         <div class="convert-hint">12/8(화) 18:00–19:00 · ×25%</div>
+      </div>
+      <div class="input-card span-2">
+        <div class="input-row">
+          <span class="input-label">향상분 가중치</span>
+          <div class="input-right">
+            <span class="input-max">%</span>
+            <input type="number" id="bonus-w" min="0" max="100" step="5" value="0">
+          </div>
+        </div>
+        <div class="convert-hint" id="bonus-hint">보너스 = max(0, 기말 − 중간) × 가중치 · 0이면 미반영</div>
       </div>
     </div>
 
@@ -113,6 +124,11 @@
           <span class="bar-val" id="bar-fin-val">0.0 / 25</span>
         </div>
         <div class="bar-row">
+          <span class="bar-label">향상분 보너스</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
+          <span class="bar-val" id="bar-bonus-val">+0.0</span>
+        </div>
+        <div class="bar-row">
           <span class="bar-label">Lab</span>
           <div class="bar-track"><div class="bar-fill" id="bar-lab"></div></div>
           <span class="bar-val" id="bar-lab-val">0.0 / 30</span>
@@ -132,7 +148,7 @@
     </p>
     <div class="result-card">
       <div class="goal-list" id="goal-list"></div>
-      <div class="convert-hint goal-note">중간·Lab·HW 는 위 입력값 그대로 가정</div>
+      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·Lab·HW 는 위 입력값 그대로 가정</div>
     </div>
 
     <!-- 등급 기준 -->
@@ -155,7 +171,8 @@
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.25 + 기말×0.25 + Lab%×0.3 + HW%×0.2<br>
+        총점 = 중간×0.25 + 기말×0.25 + Lab%×0.3 + HW%×0.2 + 향상분 보너스<br>
+        향상분 보너스 = max(0, 기말 − 중간) × 가중치% (가중치는 교수님 미공지 · 직접 입력)<br>
         출처: 수업계획서 p.2 평가방법 · 강의자료(lecture01) Assessment
       </div>
     </div>
@@ -179,24 +196,28 @@
       return ['F', 'grade-f'];
     }
 
-    function setBar(id, v, max, color) {
+    function setBar(id, v, max, color, opts = {}) {
       const fill = document.getElementById(id);
       fill.style.width = (max > 0 ? Math.min(v / max, 1) * 100 : 0) + '%';
       fill.style.background = color;
-      setText(id + '-val', `${v.toFixed(1)} / ${max}`);
+      const pfx = opts.prefix ? '+' : '';
+      const sfx = opts.noMax  ? '' : ` / ${max}`;
+      setText(id + '-val', `${pfx}${v.toFixed(1)}${sfx}`);
     }
 
-    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f. total(f) = base + wf·f
-    function neededFinal(target, base, wf) {
+    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f.
+    // total(f) = base + wf·f + wb·max(0, f − mid) 은 f에 대해 증가하는 꺾은선이다.
+    function neededFinal(target, base, wf, wb, mid) {
       if (base >= target) return 0;
-      const f = (target - base) / wf;
+      const f1 = (target - base) / wf;
+      const f = f1 <= mid ? f1 : (target - base + wb * mid) / (wf + wb);
       return f > 100 ? null : f;
     }
 
-    function renderGoals(base, wf) {
-      const maxTotal = base + wf * 100;
+    function renderGoals(base, wf, wb, mid) {
+      const maxTotal = base + wf * 100 + wb * Math.max(0, 100 - mid);
       document.getElementById('goal-list').innerHTML = GOAL_TARGETS.map(([min, label, cls]) => {
-        const f = neededFinal(min, base, wf);
+        const f = neededFinal(min, base, wf, wb, mid);
         let text;
         if (f === 0)        text = '<span class="goal-ok">기말 0점이어도 달성</span>';
         else if (f === null) text = `<span class="goal-no">기말 만점이어도 ${maxTotal.toFixed(1)}점 · 불가</span>`;
@@ -206,14 +227,22 @@
     }
 
     function calc() {
-      const vMid  = val('mid', 0, 100) * W.mid / 100;
-      const vFin  = val('fin', 0, 100) * W.fin / 100;
-      const vLab  = val('lab', 0, 100) * W.lab / 100;
-      const vHw   = val('hw', 0, 100) * W.hw / 100;
-      const base  = vMid + vLab + vHw; // 기말 제외
-      const total = base + vFin;
+      const mid    = val('mid', 0, 100);
+      const fin    = val('fin', 0, 100);
+      const wb     = val('bonus-w', 0, 100) / 100; // 향상분 가중치
+      const gain   = Math.max(0, fin - mid);
+      const vMid   = mid * W.mid / 100;
+      const vFin   = fin * W.fin / 100;
+      const vBonus = gain * wb;
+      const vLab   = val('lab', 0, 100) * W.lab / 100;
+      const vHw    = val('hw', 0, 100) * W.hw / 100;
+      const base   = vMid + vLab + vHw; // 기말·향상분 제외
+      const total  = base + vFin + vBonus;
 
       setText('total', total.toFixed(2));
+      setText('bonus-hint', wb > 0
+        ? `향상 ${gain.toFixed(1)}점 × ${(wb * 100).toFixed(0)}% = +${vBonus.toFixed(2)}점 · 기말이 중간보다 낮으면 0`
+        : '보너스 = max(0, 기말 − 중간) × 가중치 · 0이면 미반영');
 
       const [grade, gradeClass] = getGrade(total);
       const badge = document.getElementById('grade-badge');
@@ -231,10 +260,11 @@
 
       setBar('bar-mid', vMid, W.mid, '#378ADD');
       setBar('bar-fin', vFin, W.fin, '#1D9E75');
+      setBar('bar-bonus', vBonus, 100 * wb, '#EF9F27', { prefix: true, noMax: true });
       setBar('bar-lab', vLab, W.lab, '#639922');
       setBar('bar-hw',  vHw,  W.hw,  '#7F77DD');
 
-      renderGoals(base, W.fin / 100);
+      renderGoals(base, W.fin / 100, wb, mid);
     }
 
     document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
