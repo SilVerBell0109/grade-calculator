@@ -408,6 +408,21 @@ input[type=number]::-webkit-inner-spin-button {
 .cut-item input[type=number] { width: 56px; padding: 4px 8px; }
 .cut-f { font-size: 12px; font-family: var(--font-mono); color: var(--text-secondary); padding-right: 8px; }
 
+.reset-btn {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  background: none;
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+.reset-btn:hover { color: var(--text); border-color: var(--border-strong); }
+
 /* ── Responsive ── */
 @media (max-width: 520px) {
   .input-grid-2 { grid-template-columns: 1fr; }

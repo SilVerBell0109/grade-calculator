@@ -155,6 +155,7 @@
     <p class="section-label">
       등급 기준 (성취기반 평가)
       <span class="section-label-sub">점수 컷 직접 입력 (이상)</span>
+      <button type="button" class="reset-btn" id="settings-reset">기본값 복원</button>
     </p>
     <div class="cut-grid" id="grade-chips">
       <label class="cut-item"><span class="grade-chip grade-ap" data-grade="A+">A+</span><input type="number" id="cut-ap" min="0" max="100" step="0.5" value="95"></label>
@@ -168,7 +169,7 @@
       <div class="cut-item"><span class="grade-chip grade-f" data-grade="F">F</span><span class="cut-f" id="cut-f">60 미만</span></div>
     </div>
     <p class="grade-note goal-no hidden" id="cut-warn">컷은 A+ 부터 아래로 갈수록 낮아야 합니다</p>
-    <p class="grade-note">기본값: A+ 95 · A 90 · B+ 85 · B 80 (확인) · C+ 이하 5점 간격 (임시) · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
+    <p class="grade-note">컷·향상분 가중치는 이 브라우저에 저장 · 기본값: A+ 95 · A 90 · B+ 85 · B 80 (확인) · C+ 이하 5점 간격 (임시) · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
 
     <div class="page-footer">
       <div class="formula-text">
@@ -278,7 +279,37 @@
       renderGoals(grades.slice(0, 5), base, W.fin / 100, wb, mid); // A+ ~ C+
     }
 
+    // 등급 컷·향상분 가중치는 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
+    const STORE_KEY = 'ca-settings-v1';
+    const SAVED_IDS = ['bonus-w', ...GRADE_DEFS.map(d => d[2])];
+
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        for (const id of SAVED_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
+      } catch (e) {}
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(
+          Object.fromEntries(SAVED_IDS.map(id => [id, document.getElementById(id).value]))));
+      } catch (e) {}
+    }
+
+    function resetSettings() {
+      for (const id of SAVED_IDS) {
+        const el = document.getElementById(id);
+        el.value = el.defaultValue;
+      }
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      calc();
+    }
+
     document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
+    SAVED_IDS.forEach(id => document.getElementById(id).addEventListener('input', saveSettings));
+    document.getElementById('settings-reset').addEventListener('click', resetSettings);
+    loadSettings();
     calc();
   </script>
 </body>
