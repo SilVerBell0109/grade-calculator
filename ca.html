@@ -138,20 +138,20 @@
     <!-- 등급 기준 -->
     <p class="section-label">
       등급 기준 (성취기반 평가)
-      <span class="section-label-sub">A+ 외 임시 기준</span>
+      <span class="section-label-sub">C+ 이하 임시 기준</span>
     </p>
     <div class="grade-chips" id="grade-chips">
       <div class="grade-chip grade-ap" data-grade="A+">A+ <span class="threshold">95↑</span></div>
-      <div class="grade-chip grade-a" data-grade="A">A <span class="threshold">80↑</span></div>
-      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">70↑</span></div>
-      <div class="grade-chip grade-b" data-grade="B">B <span class="threshold">60↑</span></div>
-      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">50↑</span></div>
-      <div class="grade-chip grade-c" data-grade="C">C <span class="threshold">40↑</span></div>
-      <div class="grade-chip grade-dp" data-grade="D+">D+ <span class="threshold">30↑</span></div>
-      <div class="grade-chip grade-d" data-grade="D">D <span class="threshold">20↑</span></div>
-      <div class="grade-chip grade-f" data-grade="F">F <span class="threshold">20↓</span></div>
+      <div class="grade-chip grade-a" data-grade="A">A <span class="threshold">90↑</span></div>
+      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">85↑</span></div>
+      <div class="grade-chip grade-b" data-grade="B">B <span class="threshold">80↑</span></div>
+      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">75↑</span></div>
+      <div class="grade-chip grade-c" data-grade="C">C <span class="threshold">70↑</span></div>
+      <div class="grade-chip grade-dp" data-grade="D+">D+ <span class="threshold">65↑</span></div>
+      <div class="grade-chip grade-d" data-grade="D">D <span class="threshold">60↑</span></div>
+      <div class="grade-chip grade-f" data-grade="F">F <span class="threshold">60↓</span></div>
     </div>
-    <p class="grade-note">A+ 컷은 95점 · 나머지 컷은 공지되지 않아 10점 간격을 임시로 사용 · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
+    <p class="grade-note">A+ 95 · A 90 · B+ 85 · B 80 확인 · C+ 이하는 확인되지 않아 같은 5점 간격을 임시로 사용 · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
 
     <div class="page-footer">
       <div class="formula-text">
@@ -164,9 +164,9 @@
   <script>
     const W = { mid: 25, fin: 25, lab: 30, hw: 20 }; // 수업계획서 평가방법
     const GRADES = [
-      [95, 'A+', 'grade-ap'], [80, 'A', 'grade-a'], [70, 'B+', 'grade-bp'],
-      [60, 'B', 'grade-b'], [50, 'C+', 'grade-cp'], [40, 'C', 'grade-c'],
-      [30, 'D+', 'grade-dp'], [20, 'D', 'grade-d'],
+      [95, 'A+', 'grade-ap'], [90, 'A', 'grade-a'], [85, 'B+', 'grade-bp'],
+      [80, 'B', 'grade-b'], [75, 'C+', 'grade-cp'], [70, 'C', 'grade-c'], // C+ 이하 임시
+      [65, 'D+', 'grade-dp'], [60, 'D', 'grade-d'],
     ];
     const GOAL_TARGETS = GRADES.slice(0, 5); // A+ ~ C+
 
