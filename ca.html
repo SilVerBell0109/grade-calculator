@@ -33,6 +33,7 @@
         <span>HW <b>20</b></span><span>출석 <b>0</b></span>
       </div>
       <div class="convert-hint">과제 50% = 프로젝트(Lab) 30 + 과제물(HW) 20 · 출석은 반영하지 않음</div>
+      <div class="convert-hint">+ 향상분 보너스 (가중치 직접 입력 · 기본 0 = 없음)</div>
     </div>
 
     <!-- 시험 -->
@@ -57,6 +58,16 @@
           </div>
         </div>
         <div class="convert-hint">12/8(화) 18:00–19:00 · ×25%</div>
+      </div>
+      <div class="input-card span-2">
+        <div class="input-row">
+          <span class="input-label">향상분 가중치</span>
+          <div class="input-right">
+            <span class="input-max">%</span>
+            <input type="number" id="bonus-w" min="0" max="100" step="5" value="0">
+          </div>
+        </div>
+        <div class="convert-hint" id="bonus-hint">보너스 = max(0, 기말 − 중간) × 가중치 · 0이면 미반영</div>
       </div>
     </div>
 
@@ -113,6 +124,11 @@
           <span class="bar-val" id="bar-fin-val">0.0 / 25</span>
         </div>
         <div class="bar-row">
+          <span class="bar-label">향상분 보너스</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
+          <span class="bar-val" id="bar-bonus-val">+0.0</span>
+        </div>
+        <div class="bar-row">
           <span class="bar-label">Lab</span>
           <div class="bar-track"><div class="bar-fill" id="bar-lab"></div></div>
           <span class="bar-val" id="bar-lab-val">0.0 / 30</span>
@@ -132,30 +148,32 @@
     </p>
     <div class="result-card">
       <div class="goal-list" id="goal-list"></div>
-      <div class="convert-hint goal-note">중간·Lab·HW 는 위 입력값 그대로 가정</div>
+      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·Lab·HW 는 위 입력값 그대로 가정</div>
     </div>
 
     <!-- 등급 기준 -->
     <p class="section-label">
       등급 기준 (성취기반 평가)
-      <span class="section-label-sub">C+ 이하 임시 기준</span>
+      <span class="section-label-sub">점수 컷 직접 입력 (이상)</span>
     </p>
-    <div class="grade-chips" id="grade-chips">
-      <div class="grade-chip grade-ap" data-grade="A+">A+ <span class="threshold">95↑</span></div>
-      <div class="grade-chip grade-a" data-grade="A">A <span class="threshold">90↑</span></div>
-      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">85↑</span></div>
-      <div class="grade-chip grade-b" data-grade="B">B <span class="threshold">80↑</span></div>
-      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">75↑</span></div>
-      <div class="grade-chip grade-c" data-grade="C">C <span class="threshold">70↑</span></div>
-      <div class="grade-chip grade-dp" data-grade="D+">D+ <span class="threshold">65↑</span></div>
-      <div class="grade-chip grade-d" data-grade="D">D <span class="threshold">60↑</span></div>
-      <div class="grade-chip grade-f" data-grade="F">F <span class="threshold">60↓</span></div>
+    <div class="cut-grid" id="grade-chips">
+      <label class="cut-item"><span class="grade-chip grade-ap" data-grade="A+">A+</span><input type="number" id="cut-ap" min="0" max="100" step="0.5" value="95"></label>
+      <label class="cut-item"><span class="grade-chip grade-a" data-grade="A">A</span><input type="number" id="cut-a" min="0" max="100" step="0.5" value="90"></label>
+      <label class="cut-item"><span class="grade-chip grade-bp" data-grade="B+">B+</span><input type="number" id="cut-bp" min="0" max="100" step="0.5" value="85"></label>
+      <label class="cut-item"><span class="grade-chip grade-b" data-grade="B">B</span><input type="number" id="cut-b" min="0" max="100" step="0.5" value="80"></label>
+      <label class="cut-item"><span class="grade-chip grade-cp" data-grade="C+">C+</span><input type="number" id="cut-cp" min="0" max="100" step="0.5" value="75"></label>
+      <label class="cut-item"><span class="grade-chip grade-c" data-grade="C">C</span><input type="number" id="cut-c" min="0" max="100" step="0.5" value="70"></label>
+      <label class="cut-item"><span class="grade-chip grade-dp" data-grade="D+">D+</span><input type="number" id="cut-dp" min="0" max="100" step="0.5" value="65"></label>
+      <label class="cut-item"><span class="grade-chip grade-d" data-grade="D">D</span><input type="number" id="cut-d" min="0" max="100" step="0.5" value="60"></label>
+      <div class="cut-item"><span class="grade-chip grade-f" data-grade="F">F</span><span class="cut-f" id="cut-f">60 미만</span></div>
     </div>
-    <p class="grade-note">A+ 95 · A 90 · B+ 85 · B 80 확인 · C+ 이하는 확인되지 않아 같은 5점 간격을 임시로 사용 · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
+    <p class="grade-note goal-no hidden" id="cut-warn">컷은 A+ 부터 아래로 갈수록 낮아야 합니다</p>
+    <p class="grade-note">기본값: A+ 95 · A 90 · B+ 85 · B 80 (확인) · C+ 이하 5점 간격 (임시) · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.25 + 기말×0.25 + Lab%×0.3 + HW%×0.2<br>
+        총점 = 중간×0.25 + 기말×0.25 + Lab%×0.3 + HW%×0.2 + 향상분 보너스<br>
+        향상분 보너스 = max(0, 기말 − 중간) × 가중치% (가중치 직접 입력 · 기본 0)<br>
         출처: 수업계획서 p.2 평가방법 · 강의자료(lecture01) Assessment
       </div>
     </div>
@@ -163,40 +181,48 @@
 
   <script>
     const W = { mid: 25, fin: 25, lab: 30, hw: 20 }; // 수업계획서 평가방법
-    const GRADES = [
-      [95, 'A+', 'grade-ap'], [90, 'A', 'grade-a'], [85, 'B+', 'grade-bp'],
-      [80, 'B', 'grade-b'], [75, 'C+', 'grade-cp'], [70, 'C', 'grade-c'], // C+ 이하 임시
-      [65, 'D+', 'grade-dp'], [60, 'D', 'grade-d'],
+    // 등급 컷은 화면 입력값(기본: A+ 95 · A 90 · B+ 85 · B 80 확인, C+ 이하 임시)
+    const GRADE_DEFS = [
+      ['A+', 'grade-ap', 'cut-ap'], ['A', 'grade-a', 'cut-a'], ['B+', 'grade-bp', 'cut-bp'],
+      ['B', 'grade-b', 'cut-b'], ['C+', 'grade-cp', 'cut-cp'], ['C', 'grade-c', 'cut-c'],
+      ['D+', 'grade-dp', 'cut-dp'], ['D', 'grade-d', 'cut-d'],
     ];
-    const GOAL_TARGETS = GRADES.slice(0, 5); // A+ ~ C+
 
     function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
     function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
     function setText(id, text) { document.getElementById(id).textContent = text; }
 
-    function getGrade(s) {
-      for (const [min, label, cls] of GRADES) if (s >= min) return [label, cls];
+    function readGrades() {
+      return GRADE_DEFS.map(([label, cls, id]) => [val(id, 0, 100), label, cls]);
+    }
+
+    function getGrade(s, grades) {
+      for (const [min, label, cls] of grades) if (s >= min) return [label, cls];
       return ['F', 'grade-f'];
     }
 
-    function setBar(id, v, max, color) {
+    function setBar(id, v, max, color, opts = {}) {
       const fill = document.getElementById(id);
       fill.style.width = (max > 0 ? Math.min(v / max, 1) * 100 : 0) + '%';
       fill.style.background = color;
-      setText(id + '-val', `${v.toFixed(1)} / ${max}`);
+      const pfx = opts.prefix ? '+' : '';
+      const sfx = opts.noMax  ? '' : ` / ${max}`;
+      setText(id + '-val', `${pfx}${v.toFixed(1)}${sfx}`);
     }
 
-    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f. total(f) = base + wf·f
-    function neededFinal(target, base, wf) {
+    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f.
+    // total(f) = base + wf·f + wb·max(0, f − mid) 은 f에 대해 증가하는 꺾은선이다.
+    function neededFinal(target, base, wf, wb, mid) {
       if (base >= target) return 0;
-      const f = (target - base) / wf;
+      const f1 = (target - base) / wf;
+      const f = f1 <= mid ? f1 : (target - base + wb * mid) / (wf + wb);
       return f > 100 ? null : f;
     }
 
-    function renderGoals(base, wf) {
-      const maxTotal = base + wf * 100;
-      document.getElementById('goal-list').innerHTML = GOAL_TARGETS.map(([min, label, cls]) => {
-        const f = neededFinal(min, base, wf);
+    function renderGoals(targets, base, wf, wb, mid) {
+      const maxTotal = base + wf * 100 + wb * Math.max(0, 100 - mid);
+      document.getElementById('goal-list').innerHTML = targets.map(([min, label, cls]) => {
+        const f = neededFinal(min, base, wf, wb, mid);
         let text;
         if (f === 0)        text = '<span class="goal-ok">기말 0점이어도 달성</span>';
         else if (f === null) text = `<span class="goal-no">기말 만점이어도 ${maxTotal.toFixed(1)}점 · 불가</span>`;
@@ -206,36 +232,50 @@
     }
 
     function calc() {
-      const vMid  = val('mid', 0, 100) * W.mid / 100;
-      const vFin  = val('fin', 0, 100) * W.fin / 100;
-      const vLab  = val('lab', 0, 100) * W.lab / 100;
-      const vHw   = val('hw', 0, 100) * W.hw / 100;
-      const base  = vMid + vLab + vHw; // 기말 제외
-      const total = base + vFin;
+      const mid    = val('mid', 0, 100);
+      const fin    = val('fin', 0, 100);
+      const wb     = val('bonus-w', 0, 100) / 100; // 향상분 가중치
+      const gain   = Math.max(0, fin - mid);
+      const vMid   = mid * W.mid / 100;
+      const vFin   = fin * W.fin / 100;
+      const vBonus = gain * wb;
+      const vLab   = val('lab', 0, 100) * W.lab / 100;
+      const vHw    = val('hw', 0, 100) * W.hw / 100;
+      const base   = vMid + vLab + vHw; // 기말·향상분 제외
+      const total  = base + vFin + vBonus;
 
       setText('total', total.toFixed(2));
+      setText('bonus-hint', wb > 0
+        ? `향상 ${gain.toFixed(1)}점 × ${(wb * 100).toFixed(0)}% = +${vBonus.toFixed(2)}점 · 기말이 중간보다 낮으면 0`
+        : '보너스 = max(0, 기말 − 중간) × 가중치 · 0이면 미반영');
 
-      const [grade, gradeClass] = getGrade(total);
+      const grades = readGrades();
+      const descending = grades.every((g, i) => i === 0 || g[0] < grades[i - 1][0]);
+      document.getElementById('cut-warn').classList.toggle('hidden', descending);
+      setText('cut-f', `${grades[grades.length - 1][0]} 미만`);
+
+      const [grade, gradeClass] = getGrade(total, grades);
       const badge = document.getElementById('grade-badge');
       badge.textContent = grade;
       badge.className = 'grade-badge ' + gradeClass;
       document.querySelectorAll('#grade-chips .grade-chip').forEach(c =>
         c.classList.toggle('current', c.dataset.grade === grade));
 
-      const aPlus = GRADES[0][0];
+      const aPlus = grades[0][0];
       if (total >= aPlus) {
         setText('hint', `A+ 기준(${aPlus}점)을 충족합니다`);
       } else {
-        const nextUp = Math.min(...GRADES.map(g => g[0]).filter(t => t > total));
+        const nextUp = Math.min(...grades.map(g => g[0]).filter(t => t > total));
         setText('hint', `A+ 까지 ${(aPlus - total).toFixed(1)}점 부족  ·  다음 등급까지 ${(nextUp - total).toFixed(1)}점`);
       }
 
       setBar('bar-mid', vMid, W.mid, '#378ADD');
       setBar('bar-fin', vFin, W.fin, '#1D9E75');
+      setBar('bar-bonus', vBonus, 100 * wb, '#EF9F27', { prefix: true, noMax: true });
       setBar('bar-lab', vLab, W.lab, '#639922');
       setBar('bar-hw',  vHw,  W.hw,  '#7F77DD');
 
-      renderGoals(base, W.fin / 100);
+      renderGoals(grades.slice(0, 5), base, W.fin / 100, wb, mid); // A+ ~ C+
     }
 
     document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
