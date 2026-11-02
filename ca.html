@@ -26,14 +26,14 @@
     <!-- 반영 비율 -->
     <p class="section-label">
       반영 비율
-      <span class="section-label-sub">수업계획서 · 강의자료(lecture01) 기준</span>
+      <span class="section-label-sub">강의자료(lecture01) 기준</span>
     </p>
     <div class="input-card">
       <div class="weights-row">
-        <span>중간 <b>25</b></span><span>기말 <b>25</b></span><span>Lab <b>30</b></span>
-        <span>HW <b>20</b></span><span>출석 <b>0</b></span>
+        <span>중간 <b>25</b></span><span>기말 <b>25</b></span><span>HW <b>50</b></span>
+        <span>출석 <b>0</b></span>
       </div>
-      <div class="convert-hint">과제 50% = 프로젝트(Lab) 30 + 과제물(HW) 20 · 출석은 반영하지 않음</div>
+      <div class="convert-hint">출석은 반영하지 않음</div>
       <div class="convert-hint">+ 향상분 보너스 (가중치 직접 입력 · 기본 0 = 없음)</div>
     </div>
 
@@ -75,17 +75,7 @@
     <!-- 과제 -->
     <p class="section-label">과제</p>
     <div class="input-grid-2">
-      <div class="input-card">
-        <div class="input-row">
-          <span class="input-label">Lab (프로젝트 %)</span>
-          <div class="input-right">
-            <span class="input-max">/ 100</span>
-            <input type="number" id="lab" min="0" max="100" step="1" value="100">
-          </div>
-        </div>
-        <div class="convert-hint">Lab1. RISC-V assembly 코드 완성 · ×30%</div>
-      </div>
-      <div class="input-card">
+      <div class="input-card span-2">
         <div class="input-row">
           <span class="input-label">HW (eCampus %)</span>
           <div class="input-right">
@@ -93,7 +83,7 @@
             <input type="number" id="hw" min="0" max="100" step="1" value="100">
           </div>
         </div>
-        <div class="convert-hint">획득 점수 합 ÷ 배점 합 · 다음 수업 시작 전 마감 · ×20%</div>
+        <div class="convert-hint">획득 점수 합 ÷ 배점 합 · 다음 수업 시작 전 마감 · ×50%</div>
       </div>
     </div>
 
@@ -130,14 +120,9 @@
           <span class="bar-val" id="bar-bonus-val">+0.0</span>
         </div>
         <div class="bar-row">
-          <span class="bar-label">Lab</span>
-          <div class="bar-track"><div class="bar-fill" id="bar-lab"></div></div>
-          <span class="bar-val" id="bar-lab-val">0.0 / 30</span>
-        </div>
-        <div class="bar-row">
           <span class="bar-label">HW</span>
           <div class="bar-track"><div class="bar-fill" id="bar-hw"></div></div>
-          <span class="bar-val" id="bar-hw-val">0.0 / 20</span>
+          <span class="bar-val" id="bar-hw-val">0.0 / 50</span>
         </div>
       </div>
     </div>
@@ -149,57 +134,51 @@
     </p>
     <div class="result-card">
       <div class="goal-list" id="goal-list"></div>
-      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·Lab·HW 는 위 입력값 그대로 가정</div>
+      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·HW 는 위 입력값 그대로 가정</div>
     </div>
 
     <!-- 등급 기준 -->
     <p class="section-label">
       등급 기준 (성취기반 평가)
-      <span class="section-label-sub">점수 컷 직접 입력 (이상)</span>
-      <button type="button" class="reset-btn" id="settings-reset">기본값 복원</button>
+      <span class="section-label-sub">합산 점수 기준 · 확정</span>
     </p>
-    <div class="cut-grid" id="grade-chips">
-      <label class="cut-item"><span class="grade-chip grade-ap" data-grade="A+">A+</span><input type="number" id="cut-ap" min="0" max="100" step="0.5" value="85"></label>
-      <label class="cut-item"><span class="grade-chip grade-a" data-grade="A">A</span><input type="number" id="cut-a" min="0" max="100" step="0.5" value="75"></label>
-      <label class="cut-item"><span class="grade-chip grade-bp" data-grade="B+">B+</span><input type="number" id="cut-bp" min="0" max="100" step="0.5" value="65"></label>
-      <label class="cut-item"><span class="grade-chip grade-b" data-grade="B">B</span><input type="number" id="cut-b" min="0" max="100" step="0.5" value="55"></label>
-      <label class="cut-item"><span class="grade-chip grade-cp" data-grade="C+">C+</span><input type="number" id="cut-cp" min="0" max="100" step="0.5" value="45"></label>
-      <label class="cut-item"><span class="grade-chip grade-c" data-grade="C">C</span><input type="number" id="cut-c" min="0" max="100" step="0.5" value="35"></label>
-      <label class="cut-item"><span class="grade-chip grade-dp" data-grade="D+">D+</span><input type="number" id="cut-dp" min="0" max="100" step="0.5" value="25"></label>
-      <label class="cut-item"><span class="grade-chip grade-d" data-grade="D">D</span><input type="number" id="cut-d" min="0" max="100" step="0.5" value="15"></label>
-      <div class="cut-item"><span class="grade-chip grade-f" data-grade="F">F</span><span class="cut-f" id="cut-f">15 미만</span></div>
+    <div class="grade-chips" id="grade-chips">
+      <div class="grade-chip grade-ap" data-grade="A+">A+ <span class="threshold">85↑</span></div>
+      <div class="grade-chip grade-a" data-grade="A">A <span class="threshold">75↑</span></div>
+      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">65↑</span></div>
+      <div class="grade-chip grade-b" data-grade="B">B <span class="threshold">55↑</span></div>
+      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">45↑</span></div>
+      <div class="grade-chip grade-c" data-grade="C">C <span class="threshold">35↑</span></div>
+      <div class="grade-chip grade-dp" data-grade="D+">D+ <span class="threshold">25↑</span></div>
+      <div class="grade-chip grade-d" data-grade="D">D <span class="threshold">15↑</span></div>
+      <div class="grade-chip grade-f" data-grade="F">F <span class="threshold">15 미만</span></div>
     </div>
-    <p class="grade-note goal-no hidden" id="cut-warn">컷은 A+ 부터 아래로 갈수록 낮아야 합니다</p>
-    <p class="grade-note">컷·향상분 가중치는 이 브라우저에 저장 · 기본값(합산 점수 기준): A+ 85 · A 75 · B+ 65 · B 55 · C+ 45 · C 35 · D+ 25 · D 15 · F 15 미만 · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
+    <p class="grade-note">다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.25 + 기말×0.25 + Lab%×0.3 + HW%×0.2 + 향상분 보너스<br>
+        총점 = 중간×0.25 + 기말×0.25 + HW%×0.5 + 향상분 보너스<br>
         향상분 보너스 = max(0, 기말 − 중간) × 가중치% (가중치 직접 입력 · 기본 0)<br>
-        출처: 수업계획서 p.2 평가방법 · 강의자료(lecture01) Assessment
+        출처: 강의자료(lecture01) Assessment
       </div>
     </div>
   </div>
 
   <script>
-    const W = { mid: 25, fin: 25, lab: 30, hw: 20 }; // 수업계획서 평가방법
-    // 등급 컷은 화면 입력값(기본: 합산 점수 기준 A+ 85 · A 75 · B+ 65 · B 55 · C+ 45 · C 35 · D+ 25 · D 15)
-    const GRADE_DEFS = [
-      ['A+', 'grade-ap', 'cut-ap'], ['A', 'grade-a', 'cut-a'], ['B+', 'grade-bp', 'cut-bp'],
-      ['B', 'grade-b', 'cut-b'], ['C+', 'grade-cp', 'cut-cp'], ['C', 'grade-c', 'cut-c'],
-      ['D+', 'grade-dp', 'cut-dp'], ['D', 'grade-d', 'cut-d'],
+    const W = { mid: 25, fin: 25, hw: 50 }; // 강의자료(lecture01) Assessment
+    const GRADES = [
+      [85, 'A+', 'grade-ap'], [75, 'A', 'grade-a'], [65, 'B+', 'grade-bp'],
+      [55, 'B', 'grade-b'], [45, 'C+', 'grade-cp'], [35, 'C', 'grade-c'],
+      [25, 'D+', 'grade-dp'], [15, 'D', 'grade-d'],
     ];
+    const GOAL_TARGETS = GRADES.slice(0, 5); // A+ ~ C+
 
     function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
     function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
     function setText(id, text) { document.getElementById(id).textContent = text; }
 
-    function readGrades() {
-      return GRADE_DEFS.map(([label, cls, id]) => [val(id, 0, 100), label, cls]);
-    }
-
-    function getGrade(s, grades) {
-      for (const [min, label, cls] of grades) if (s >= min) return [label, cls];
+    function getGrade(s) {
+      for (const [min, label, cls] of GRADES) if (s >= min) return [label, cls];
       return ['F', 'grade-f'];
     }
 
@@ -241,9 +220,8 @@
       const vMid   = mid * W.mid / 100;
       const vFin   = fin * W.fin / 100;
       const vBonus = gain * wb;
-      const vLab   = val('lab', 0, 100) * W.lab / 100;
       const vHw    = val('hw', 0, 100) * W.hw / 100;
-      const base   = vMid + vLab + vHw; // 기말·향상분 제외
+      const base   = vMid + vHw; // 기말·향상분 제외
       const total  = base + vFin + vBonus;
 
       setText('total', total.toFixed(2));
@@ -251,48 +229,37 @@
         ? `향상 ${gain.toFixed(1)}점 × ${(wb * 100).toFixed(0)}% = +${vBonus.toFixed(2)}점 · 기말이 중간보다 낮으면 0`
         : '보너스 = max(0, 기말 − 중간) × 가중치 · 0이면 미반영');
 
-      const grades = readGrades();
-      const descending = grades.every((g, i) => i === 0 || g[0] < grades[i - 1][0]);
-      document.getElementById('cut-warn').classList.toggle('hidden', descending);
-      setText('cut-f', `${grades[grades.length - 1][0]} 미만`);
-
-      const [grade, gradeClass] = getGrade(total, grades);
+      const [grade, gradeClass] = getGrade(total);
       const badge = document.getElementById('grade-badge');
       badge.textContent = grade;
       badge.className = 'grade-badge ' + gradeClass;
       document.querySelectorAll('#grade-chips .grade-chip').forEach(c =>
         c.classList.toggle('current', c.dataset.grade === grade));
 
-      const aPlus = grades[0][0];
+      const aPlus = GRADES[0][0];
       if (total >= aPlus) {
         setText('hint', `A+ 기준(${aPlus}점)을 충족합니다`);
       } else {
-        const nextUp = Math.min(...grades.map(g => g[0]).filter(t => t > total));
+        const nextUp = Math.min(...GRADES.map(g => g[0]).filter(t => t > total));
         setText('hint', `A+ 까지 ${(aPlus - total).toFixed(1)}점 부족  ·  다음 등급까지 ${(nextUp - total).toFixed(1)}점`);
       }
 
       setBar('bar-mid', vMid, W.mid, '#378ADD');
       setBar('bar-fin', vFin, W.fin, '#1D9E75');
       setBar('bar-bonus', vBonus, 100 * wb, '#EF9F27', { prefix: true, noMax: true });
-      setBar('bar-lab', vLab, W.lab, '#639922');
       setBar('bar-hw',  vHw,  W.hw,  '#7F77DD');
 
-      renderGoals(grades.slice(0, 5), base, W.fin / 100, wb, mid); // A+ ~ C+
+      renderGoals(GOAL_TARGETS, base, W.fin / 100, wb, mid); // A+ ~ C+
     }
 
-    // 입력값(점수·등급 컷·향상분 가중치)을 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
+    // 입력값(점수·향상분 가중치)을 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
     const STORE_KEY = 'ca-settings-v2';
-    const OLD_STORE_KEY = 'ca-settings-v1'; // 옛 컷이 저장된 키
+    const OLD_STORE_KEY = 'ca-settings-v1';
     const PERSIST_IDS = Array.from(document.querySelectorAll('input[type=number]')).map(el => el.id);
-    const RESET_IDS = ['bonus-w', ...GRADE_DEFS.map(d => d[2])]; // '기본값 복원' 버튼 대상(컷·가중치만, 점수는 유지)
 
     function loadSettings() {
       try {
-        let saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-        if (!saved) { // v1 값은 점수·가중치만 이어받고 옛 컷은 버린다
-          saved = JSON.parse(localStorage.getItem(OLD_STORE_KEY) || '{}');
-          for (const d of GRADE_DEFS) delete saved[d[2]];
-        }
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || localStorage.getItem(OLD_STORE_KEY) || '{}');
         for (const id of PERSIST_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
       } catch (e) {}
     }
@@ -304,20 +271,10 @@
       } catch (e) {}
     }
 
-    function resetSettings() {
-      for (const id of RESET_IDS) {
-        const el = document.getElementById(id);
-        el.value = el.defaultValue;
-      }
-      saveSettings(); // 점수 입력값은 유지, 컷·가중치만 기본값으로
-      calc();
-    }
-
     document.querySelectorAll('input[type=number]').forEach(el => {
       el.addEventListener('input', calc);
       el.addEventListener('input', saveSettings);
     });
-    document.getElementById('settings-reset').addEventListener('click', resetSettings);
     loadSettings();
     calc();
   </script>
