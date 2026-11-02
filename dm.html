@@ -6,6 +6,12 @@
   <title>이산수학 성적 계산기</title>
   <meta name="description" content="국민대 소프트웨어융합대학 이산수학(최승혁 교수) 2026-2학기 성적 계산기">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* 퀴즈 항목: 획득 / 배점 두 칸 */
+    #quiz-items .input-right { gap: 6px; }
+    #quiz-items .qi-in { width: 58px; text-align: right; }
+    #quiz-items .input-max { opacity: .6; }
+  </style>
 </head>
 <body>
   <nav class="nav">
@@ -74,7 +80,7 @@
         <button type="button" class="seg-btn" data-mode="single">단일 입력</button>
         <button type="button" class="seg-btn active" data-mode="items">성적부 항목별</button>
       </div>
-      <div class="convert-hint">단일: 퀴즈 합계 점수(0~30) 직접 입력 · 항목별: eCampus 성적부 퀴즈 항목(배점 합 60)을 30점으로 환산</div>
+      <div class="convert-hint">단일: 퀴즈 합계 점수(0~30) 직접 입력 · 항목별: 각 퀴즈 '획득/배점'을 입력하면 Σ획득÷Σ배점×30 으로 환산</div>
     </div>
 
     <!-- 퀴즈: 단일 입력 -->
@@ -89,19 +95,15 @@
       <div class="convert-hint">eCampus 성적부 '퀴즈 합계' 성적(0~30) 직접 입력</div>
     </div>
 
-    <!-- 퀴즈: 성적부 항목별 (eCampus 11/2 기준 · 합계 = Σ성적 ÷ Σ배점 × 100) -->
+    <!-- 퀴즈: 성적부 항목별 (각 퀴즈 획득/배점 입력 · 합계 = Σ획득 ÷ Σ배점 × 30) -->
+    <!-- 항목 카드는 아래 QUIZ_ITEMS 로 JS 가 생성, 아래 합계 카드 앞에 삽입됨 -->
     <div id="quiz-items" class="input-grid-2">
-      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 연습</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-prac" min="0" max="10" step="0.5" value="5"></div></div></div>
-      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 1</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-1" min="0" max="10" step="0.5" value="0"></div></div></div>
-      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 2</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-2" min="0" max="10" step="0.5" value="8"></div></div></div>
-      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 3</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-3" min="0" max="10" step="0.5" value="8"></div></div></div>
-      <div class="input-card span-2"><div class="input-row"><span class="input-label">퀴즈 4 &amp; 5</span><div class="input-right"><span class="input-max">/ 20</span><input type="number" id="qi-45" min="0" max="20" step="0.5" value="13"></div></div></div>
-      <div class="input-card span-2">
+      <div class="input-card span-2" id="quiz-subtotal-card">
         <div class="subtotal-row">
           <span class="subtotal-label">퀴즈 합계 (30점 환산)</span>
           <span class="subtotal-val" id="quiz-sum-val">17.0 / 30 (34 / 60)</span>
         </div>
-        <div class="convert-hint">기본값은 11/2 성적부 기준 · 퀴즈 6~9(정수론·그래프 등)는 성적부 반영 후 추가 예정</div>
+        <div class="convert-hint">각 퀴즈를 '획득 / 배점'으로 입력 · 배점 0인 퀴즈(앞으로 예정)는 합계에서 제외 · 기본값은 11/2 성적부 기준</div>
       </div>
     </div>
 
@@ -215,8 +217,36 @@
 
     // 퀴즈 입력 방식: 'single'(합계 점수 직접) | 'items'(성적부 항목별)
     let quizMode = 'items';
-    const QUIZ_ITEMS = [['qi-prac', 10], ['qi-1', 10], ['qi-2', 10], ['qi-3', 10], ['qi-45', 20]];
-    const QUIZ_RANGE = QUIZ_ITEMS.reduce((a, [, r]) => a + r, 0); // 배점 합 = 60
+    // 각 퀴즈: { id, label, s:기본 획득점수, m:기본 배점 }. 배점 0 = 아직 안 치른 퀴즈(합계 제외)
+    // 현재 값은 2026-11-02 eCampus 성적부 기준 · q-6~q-10 은 앞으로의 퀴즈 자리(배점 입력 시 합계 반영)
+    const QUIZ_ITEMS = [
+      { id: 'q-prac', label: '퀴즈 연습', s: 5,  m: 10 },
+      { id: 'q-1',    label: '퀴즈 1',    s: 0,  m: 10 },
+      { id: 'q-2',    label: '퀴즈 2',    s: 8,  m: 10 },
+      { id: 'q-3',    label: '퀴즈 3',    s: 8,  m: 10 },
+      { id: 'q-45',   label: '퀴즈 4 & 5', s: 13, m: 20 },
+      { id: 'q-6',    label: '퀴즈 6',    s: 0,  m: 0  },
+      { id: 'q-7',    label: '퀴즈 7',    s: 0,  m: 0  },
+      { id: 'q-8',    label: '퀴즈 8',    s: 0,  m: 0  },
+      { id: 'q-9',    label: '퀴즈 9',    s: 0,  m: 0  },
+      { id: 'q-10',   label: '퀴즈 10',   s: 0,  m: 0  },
+    ];
+
+    // 퀴즈 항목 카드(획득/배점 두 칸)를 합계 카드 앞에 생성
+    (function buildQuizItems() {
+      const html = QUIZ_ITEMS.map(q => `
+        <div class="input-card">
+          <div class="input-row">
+            <span class="input-label">${q.label}</span>
+            <div class="input-right">
+              <input type="number" id="${q.id}-s" class="qi-in" min="0" step="0.5" value="${q.s}" aria-label="${q.label} 획득 점수">
+              <span class="input-max">/</span>
+              <input type="number" id="${q.id}-m" class="qi-in qi-max" min="0" step="0.5" value="${q.m}" aria-label="${q.label} 배점">
+            </div>
+          </div>
+        </div>`).join('');
+      document.getElementById('quiz-subtotal-card').insertAdjacentHTML('beforebegin', html);
+    })();
 
     function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
     function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
@@ -256,13 +286,19 @@
       }).join('');
     }
 
-    // 퀴즈 환산점수(0~30). items 모드: Σ성적 ÷ Σ배점 × 30
+    // 퀴즈 환산점수(0~30). items 모드: Σ획득 ÷ Σ배점 × 30 (배점 0 항목은 제외)
     function quizPoints() {
       if (quizMode === 'items') {
-        const raw = QUIZ_ITEMS.reduce((a, [id, r]) => a + val(id, 0, r), 0);
-        return { pts: raw / QUIZ_RANGE * W.quiz, raw };
+        let got = 0, max = 0;
+        for (const q of QUIZ_ITEMS) {
+          const m = val(q.id + '-m', 0, 1000);
+          if (m <= 0) continue;                               // 배점 0 = 미실시 → 제외
+          got += Math.min(val(q.id + '-s', 0, 1000), m);      // 획득은 배점 상한
+          max += m;
+        }
+        return { pts: max > 0 ? got / max * W.quiz : 0, got, max };
       }
-      return { pts: val('quiz', 0, W.quiz), raw: null };
+      return { pts: val('quiz', 0, W.quiz), got: null, max: null };
     }
 
     function setQuizMode(mode) {
@@ -303,9 +339,9 @@
       const total = base + fin;
 
       setText('total', total.toFixed(2));
-      setText('quiz-sum-val', q.raw === null
+      setText('quiz-sum-val', q.max === null
         ? `${quiz.toFixed(1)} / ${W.quiz}`
-        : `${quiz.toFixed(1)} / ${W.quiz} (${(+q.raw.toFixed(1))} / ${QUIZ_RANGE})`);
+        : `${quiz.toFixed(1)} / ${W.quiz} (${(+q.got.toFixed(1))} / ${q.max})`);
 
       const [grade, gradeClass] = getGrade(total);
       const badge = document.getElementById('grade-badge');
@@ -333,8 +369,8 @@
     }
 
     // 입력값을 이 브라우저(localStorage)에 저장. 저장소를 못 쓰면 무시하고 기본값 동작.
-    // v2: 점수제(중간/기말/퀴즈 30·출석 10)로 스케일이 바뀌어 키를 올림.
-    const STORE_KEY = 'dm-inputs-v2';
+    // v3: 퀴즈를 항목별 '획득/배점' 두 칸으로 바꿔 입력 id 가 달라져 키를 올림.
+    const STORE_KEY = 'dm-inputs-v3';
     const numInputs = document.querySelectorAll('input[type=number]');
 
     function loadInputs() {
