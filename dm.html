@@ -43,57 +43,89 @@
         <div class="input-row">
           <span class="input-label">중간고사</span>
           <div class="input-right">
-            <span class="input-max">/ 100</span>
-            <input type="number" id="mid" min="0" max="100" step="0.5" value="0">
+            <span class="input-max">/ 30</span>
+            <input type="number" id="mid" min="0" max="30" step="0.5" value="0">
           </div>
         </div>
-        <div class="convert-hint">10/21(수)·10/26(월) · ×30%</div>
+        <div class="convert-hint">10/21(수)·10/26(월) · 30점 만점</div>
       </div>
       <div class="input-card">
         <div class="input-row">
           <span class="input-label">기말고사</span>
           <div class="input-right">
-            <span class="input-max">/ 100</span>
-            <input type="number" id="fin" min="0" max="100" step="0.5" value="0">
+            <span class="input-max">/ 30</span>
+            <input type="number" id="fin" min="0" max="30" step="0.5" value="0">
           </div>
         </div>
-        <div class="convert-hint">12/9(수)·12/14(월) · ×30%</div>
+        <div class="convert-hint">12/9(수)·12/14(월) · 30점 만점</div>
       </div>
     </div>
 
-    <!-- 퀴즈 · 출석 -->
-    <p class="section-label">퀴즈 · 출석</p>
-    <div class="input-grid-2">
-      <div class="input-card">
-        <div class="input-row">
-          <span class="input-label">퀴즈 (slido %)</span>
-          <div class="input-right">
-            <span class="input-max">/ 100</span>
-            <input type="number" id="quiz" min="0" max="100" step="1" value="100">
-          </div>
-        </div>
-        <div class="convert-hint">획득 점수 합 ÷ 배점 합 · ×30%</div>
+    <!-- 퀴즈 -->
+    <p class="section-label">
+      퀴즈
+      <span class="section-label-sub">입력 방식 선택 · 30점 만점</span>
+    </p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">입력 방식</span>
       </div>
-      <div class="input-card">
-        <div class="input-row">
-          <span class="input-label">출석</span>
-          <div class="input-right">
-            <span class="input-max">/ 100</span>
-            <input type="number" id="att" min="0" max="100" step="1" value="100">
-          </div>
-        </div>
-        <div class="convert-hint">×10% · 수업일수 1/4 이상 결석 시 성적 미부여</div>
+      <div class="seg-group seg-compact" id="quizmode-group">
+        <button type="button" class="seg-btn" data-mode="single">단일 입력</button>
+        <button type="button" class="seg-btn active" data-mode="items">성적부 항목별</button>
       </div>
+      <div class="convert-hint">단일: 퀴즈 합계 점수(0~30) 직접 입력 · 항목별: eCampus 성적부 퀴즈 항목(배점 합 60)을 30점으로 환산</div>
+    </div>
+
+    <!-- 퀴즈: 단일 입력 -->
+    <div id="quiz-single" class="input-card hidden">
+      <div class="input-row">
+        <span class="input-label">퀴즈 합계 점수</span>
+        <div class="input-right">
+          <span class="input-max">/ 30</span>
+          <input type="number" id="quiz" min="0" max="30" step="0.01" value="17">
+        </div>
+      </div>
+      <div class="convert-hint">eCampus 성적부 '퀴즈 합계' 성적(0~30) 직접 입력</div>
+    </div>
+
+    <!-- 퀴즈: 성적부 항목별 (eCampus 11/2 기준 · 합계 = Σ성적 ÷ Σ배점 × 100) -->
+    <div id="quiz-items" class="input-grid-2">
+      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 연습</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-prac" min="0" max="10" step="0.5" value="5"></div></div></div>
+      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 1</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-1" min="0" max="10" step="0.5" value="0"></div></div></div>
+      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 2</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-2" min="0" max="10" step="0.5" value="8"></div></div></div>
+      <div class="input-card"><div class="input-row"><span class="input-label">퀴즈 3</span><div class="input-right"><span class="input-max">/ 10</span><input type="number" id="qi-3" min="0" max="10" step="0.5" value="8"></div></div></div>
+      <div class="input-card span-2"><div class="input-row"><span class="input-label">퀴즈 4 &amp; 5</span><div class="input-right"><span class="input-max">/ 20</span><input type="number" id="qi-45" min="0" max="20" step="0.5" value="13"></div></div></div>
       <div class="input-card span-2">
-        <div class="input-row">
-          <span class="input-label">보너스 기말고사 (맞은 개수)</span>
-          <div class="input-right">
-            <span class="input-max">/ 10</span>
-            <input type="number" id="bonus" min="0" max="10" step="1" value="0">
-          </div>
+        <div class="subtotal-row">
+          <span class="subtotal-label">퀴즈 합계 (30점 환산)</span>
+          <span class="subtotal-val" id="quiz-sum-val">17.0 / 30 (34 / 60)</span>
         </div>
-        <div class="convert-hint" id="bonus-hint">신청자 대상 · 기말 이후 난이도 상 10문제 · 맞은 만큼 퀴즈 점수 회복(100 초과 불가) · 총점 최대 +3점</div>
+        <div class="convert-hint">기본값은 11/2 성적부 기준 · 퀴즈 6~9(정수론·그래프 등)는 성적부 반영 후 추가 예정</div>
       </div>
+    </div>
+
+    <!-- 출석 -->
+    <p class="section-label">출석</p>
+    <div class="input-card">
+      <div class="input-row">
+        <span class="input-label">출석</span>
+        <div class="input-right">
+          <span class="input-max">/ 10</span>
+          <input type="number" id="att" min="0" max="10" step="0.5" value="10">
+        </div>
+      </div>
+      <div class="convert-hint">10점 만점 · 수업일수 1/4 이상 결석 시 성적 미부여</div>
+    </div>
+
+    <!-- 보너스 기말고사 (입력 없이 역산 안내만) -->
+    <p class="section-label">
+      보너스 기말고사
+      <span class="section-label-sub">입력 없이 역산 — 다음 등급까지 필요한 맞은 개수</span>
+    </p>
+    <div class="result-card">
+      <div class="hint-text" id="bonus-needed"></div>
+      <div class="convert-hint">신청자 대상 · 기말 이후 난이도 상 10문제 · 맞은 만큼 퀴즈 점수 회복(총점 최대 +3점) · 총점 계산에는 미반영</div>
     </div>
 
     <!-- 결과 -->
@@ -129,11 +161,6 @@
           <span class="bar-val" id="bar-quiz-val">0.0 / 30</span>
         </div>
         <div class="bar-row">
-          <span class="bar-label">보너스 회복</span>
-          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
-          <span class="bar-val" id="bar-bonus-val">+0.0</span>
-        </div>
-        <div class="bar-row">
           <span class="bar-label">출석</span>
           <div class="bar-track"><div class="bar-fill" id="bar-att"></div></div>
           <span class="bar-val" id="bar-att-val">0.0 / 10</span>
@@ -148,7 +175,7 @@
     </p>
     <div class="result-card">
       <div class="goal-list" id="goal-list"></div>
-      <div class="convert-hint goal-note">보너스 회복 포함 · 중간·퀴즈·출석은 위 입력값 그대로 가정</div>
+      <div class="convert-hint goal-note">보너스 제외 · 중간·퀴즈·출석은 위 입력값 그대로 가정</div>
     </div>
 
     <!-- 등급 기준 -->
@@ -168,15 +195,16 @@
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.3 + 기말×0.3 + 퀴즈%×0.3 + 출석%×0.1 + 보너스 회복<br>
-        보너스 회복 = min(10, 100 − 퀴즈, 맞은 개수) × 0.3 (최대 +3점) · 퀴즈를 100까지만 되살림<br>
+        총점(100) = 중간(30) + 기말(30) + 퀴즈(30) + 출석(10)<br>
+        보너스 기말: 맞은 개수×0.3점 퀴즈 회복(최대 +3점) — 총점엔 미반영, '다음 등급까지 몇 개 필요'만 역산<br>
         출처: 수업계획서 p.2 평가방법 · 성적기준 안내(중간 후) · 보너스 기말고사 안내
       </div>
     </div>
   </div>
 
   <script>
-    const W = { mid: 30, fin: 30, quiz: 30, att: 10 }; // 수업계획서 평가방법
+    const W = { mid: 30, fin: 30, quiz: 30, att: 10 }; // 각 항목 만점 (총점 100)
+    const PER_CORRECT = W.quiz / 100; // 보너스 1개당 총점 상승 (=0.3점)
     // 등급 컷은 상대평가 중간 후 잠정 (기대 총점 = 기말 점수가 중간과 동일할 경우)
     const GRADES = [
       [80, 'A+', 'grade-ap'], [75, 'A0', 'grade-a'], [70, 'B+', 'grade-bp'],
@@ -184,6 +212,11 @@
     ];
     const FALLBACK = ['C0', 'grade-c']; // 40점 미만
     const GOAL_TARGETS = GRADES; // A+ ~ C+
+
+    // 퀴즈 입력 방식: 'single'(합계 점수 직접) | 'items'(성적부 항목별)
+    let quizMode = 'items';
+    const QUIZ_ITEMS = [['qi-prac', 10], ['qi-1', 10], ['qi-2', 10], ['qi-3', 10], ['qi-45', 20]];
+    const QUIZ_RANGE = QUIZ_ITEMS.reduce((a, [, r]) => a + r, 0); // 배점 합 = 60
 
     function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
     function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
@@ -203,48 +236,76 @@
       setText(id + '-val', `${pfx}${v.toFixed(1)}${sfx}`);
     }
 
-    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f.
-    // total(f) = base + 0.3·f (선형, 이산수학은 향상분 보너스 없음)
-    function neededFinal(target, base, wf) {
+    // 기말 원점수 f(0~30)로 목표 총점 target 에 닿으려면 필요한 최소 f.
+    // total(f) = base + f (기말은 30점 만점 원점수, 향상분 보너스 없음)
+    function neededFinal(target, base) {
       if (base >= target) return 0;
-      const f = (target - base) / wf;
-      return f > 100 ? null : f;
+      const f = target - base;
+      return f > W.fin ? null : f;
     }
 
-    function renderGoals(base, wf) {
-      const maxTotal = base + wf * 100;
+    function renderGoals(base) {
+      const maxTotal = base + W.fin;
       document.getElementById('goal-list').innerHTML = GOAL_TARGETS.map(([min, label, cls]) => {
-        const f = neededFinal(min, base, wf);
+        const f = neededFinal(min, base);
         let text;
         if (f === 0)        text = '<span class="goal-ok">기말 0점이어도 달성</span>';
         else if (f === null) text = `<span class="goal-no">기말 만점이어도 ${maxTotal.toFixed(1)}점 · 불가</span>`;
-        else                text = `기말 <b>${(Math.ceil(f * 10 - 1e-9) / 10).toFixed(1)}</b>점 이상`;
+        else                text = `기말 <b>${(Math.ceil(f * 10 - 1e-9) / 10).toFixed(1)}</b>점 이상 (/30)`;
         return `<div class="goal-row"><span class="grade-chip ${cls}">${label} <span class="threshold">${min}↑</span></span><span class="goal-text">${text}</span></div>`;
       }).join('');
     }
 
+    // 퀴즈 환산점수(0~30). items 모드: Σ성적 ÷ Σ배점 × 30
+    function quizPoints() {
+      if (quizMode === 'items') {
+        const raw = QUIZ_ITEMS.reduce((a, [id, r]) => a + val(id, 0, r), 0);
+        return { pts: raw / QUIZ_RANGE * W.quiz, raw };
+      }
+      return { pts: val('quiz', 0, W.quiz), raw: null };
+    }
+
+    function setQuizMode(mode) {
+      quizMode = mode;
+      document.querySelectorAll('#quizmode-group .seg-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === mode));
+      document.getElementById('quiz-single').classList.toggle('hidden', mode !== 'single');
+      document.getElementById('quiz-items').classList.toggle('hidden', mode !== 'items');
+      calc();
+    }
+
+    // 보너스 기말고사: 입력 없이 '다음 등급까지 맞은 개수 몇 개 필요'만 역산
+    function renderBonus(total, quiz) {
+      const el = document.getElementById('bonus-needed');
+      const room = Math.max(0, W.quiz - quiz);              // 퀴즈에서 회복 가능한 점수
+      const maxGain = Math.min(10 * PER_CORRECT, room);     // 보너스로 올릴 수 있는 총점 (≤3)
+      const aPlus = GRADES[0][0];
+      if (total >= aPlus) { el.innerHTML = '이미 최고 등급(A+) · 보너스 기말 불필요'; return; }
+      const nextCut = Math.min(...GRADES.map(g => g[0]).filter(t => t > total));
+      const next = GRADES.find(g => g[0] === nextCut);
+      const gain = nextCut - total;
+      if (gain <= maxGain + 1e-9) {
+        const n = Math.max(1, Math.ceil(gain / PER_CORRECT - 1e-9));
+        el.innerHTML = `다음 등급 <b>${next[1]}</b>(${nextCut}점)까지 보너스 기말 <b>${n}개</b> 정답 필요 <span class="threshold">(+${(n * PER_CORRECT).toFixed(1)}점)</span>`;
+      } else {
+        el.innerHTML = `보너스 기말(최대 +${maxGain.toFixed(1)}점)로는 <b>${next[1]}</b>(${nextCut}점) 도달 부족 · 기말에서 ${(gain - maxGain).toFixed(1)}점 더 필요`;
+      }
+    }
+
     function calc() {
-      const mid   = val('mid', 0, 100);
-      const fin   = val('fin', 0, 100);
-      const quiz  = val('quiz', 0, 100);
-      const att   = val('att', 0, 100);
-      const bonus = val('bonus', 0, 10);
+      const mid  = val('mid', 0, W.mid);
+      const fin  = val('fin', 0, W.fin);
+      const q    = quizPoints();
+      const quiz = q.pts;                 // 퀴즈 환산점수 (0~30)
+      const att  = val('att', 0, W.att);
 
-      const recovered = Math.min(bonus, 100 - quiz); // 퀴즈를 100까지만 되살림
-      const quizEff   = quiz + recovered;
-
-      const vMid   = mid * W.mid / 100;
-      const vFin   = fin * W.fin / 100;
-      const vQuiz  = quiz * W.quiz / 100;      // 보너스 전 퀴즈
-      const vBonus = recovered * W.quiz / 100; // 회복분 (최대 +3)
-      const vAtt   = att * W.att / 100;
-      const base   = vMid + vQuiz + vBonus + vAtt; // 기말 제외
-      const total  = base + vFin;
+      const base  = mid + quiz + att;     // 기말 제외
+      const total = base + fin;
 
       setText('total', total.toFixed(2));
-      setText('bonus-hint', bonus > 0
-        ? `맞은 ${bonus}개 중 ${recovered}점 회복(퀴즈 ${quiz}→${quizEff}) = +${vBonus.toFixed(2)}점 · 퀴즈 100 초과 불가`
-        : '신청자 대상 · 기말 이후 난이도 상 10문제 · 맞은 만큼 퀴즈 점수 회복(100 초과 불가) · 총점 최대 +3점');
+      setText('quiz-sum-val', q.raw === null
+        ? `${quiz.toFixed(1)} / ${W.quiz}`
+        : `${quiz.toFixed(1)} / ${W.quiz} (${(+q.raw.toFixed(1))} / ${QUIZ_RANGE})`);
 
       const [grade, gradeClass] = getGrade(total);
       const badge = document.getElementById('grade-badge');
@@ -262,39 +323,45 @@
         setText('hint', `A+ 까지 ${(aPlus - total).toFixed(1)}점 부족  ·  다음 등급까지 ${(nextUp - total).toFixed(1)}점`);
       }
 
-      setBar('bar-mid',   vMid,   W.mid,  '#378ADD');
-      setBar('bar-fin',   vFin,   W.fin,  '#1D9E75');
-      setBar('bar-quiz',  vQuiz,  W.quiz, '#7F77DD');
-      setBar('bar-bonus', vBonus, 3,      '#EF9F27', { prefix: true, noMax: true });
-      setBar('bar-att',   vAtt,   W.att,  '#BA7517');
+      setBar('bar-mid',  mid,  W.mid,  '#378ADD');
+      setBar('bar-fin',  fin,  W.fin,  '#1D9E75');
+      setBar('bar-quiz', quiz, W.quiz, '#7F77DD');
+      setBar('bar-att',  att,  W.att,  '#BA7517');
 
-      renderGoals(base, W.fin / 100);
+      renderBonus(total, quiz);
+      renderGoals(base);
     }
 
     // 입력값을 이 브라우저(localStorage)에 저장. 저장소를 못 쓰면 무시하고 기본값 동작.
-    const STORE_KEY = 'dm-inputs-v1';
+    // v2: 점수제(중간/기말/퀴즈 30·출석 10)로 스케일이 바뀌어 키를 올림.
+    const STORE_KEY = 'dm-inputs-v2';
     const numInputs = document.querySelectorAll('input[type=number]');
 
     function loadInputs() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
         numInputs.forEach(el => { if (saved[el.id] != null) el.value = saved[el.id]; });
+        if (saved.quizMode === 'single' || saved.quizMode === 'items') quizMode = saved.quizMode;
       } catch (e) {}
     }
 
     function saveInputs() {
       try {
-        localStorage.setItem(STORE_KEY, JSON.stringify(
-          Object.fromEntries(Array.from(numInputs).map(el => [el.id, el.value]))));
+        const data = { quizMode };
+        numInputs.forEach(el => { data[el.id] = el.value; });
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
       } catch (e) {}
     }
+
+    document.querySelectorAll('#quizmode-group .seg-btn').forEach(b =>
+      b.addEventListener('click', () => { setQuizMode(b.dataset.mode); saveInputs(); }));
 
     numInputs.forEach(el => {
       el.addEventListener('input', calc);
       el.addEventListener('input', saveInputs);
     });
     loadInputs();
-    calc();
+    setQuizMode(quizMode); // 초기 표시 + calc()
   </script>
 </body>
 </html>
