@@ -13,6 +13,7 @@
     <div class="nav-links">
       <a href="index.html" class="nav-link">알고리즘</a>
       <a href="ca.html" class="nav-link active">컴퓨터구조</a>
+      <a href="dm.html" class="nav-link">이산수학</a>
     </div>
   </nav>
 
@@ -279,35 +280,38 @@
       renderGoals(grades.slice(0, 5), base, W.fin / 100, wb, mid); // A+ ~ C+
     }
 
-    // 등급 컷·향상분 가중치는 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
+    // 입력값(점수·등급 컷·향상분 가중치)을 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
     const STORE_KEY = 'ca-settings-v1';
-    const SAVED_IDS = ['bonus-w', ...GRADE_DEFS.map(d => d[2])];
+    const PERSIST_IDS = Array.from(document.querySelectorAll('input[type=number]')).map(el => el.id);
+    const RESET_IDS = ['bonus-w', ...GRADE_DEFS.map(d => d[2])]; // '기본값 복원' 버튼 대상(컷·가중치만, 점수는 유지)
 
     function loadSettings() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
-        for (const id of SAVED_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
+        for (const id of PERSIST_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
       } catch (e) {}
     }
 
     function saveSettings() {
       try {
         localStorage.setItem(STORE_KEY, JSON.stringify(
-          Object.fromEntries(SAVED_IDS.map(id => [id, document.getElementById(id).value]))));
+          Object.fromEntries(PERSIST_IDS.map(id => [id, document.getElementById(id).value]))));
       } catch (e) {}
     }
 
     function resetSettings() {
-      for (const id of SAVED_IDS) {
+      for (const id of RESET_IDS) {
         const el = document.getElementById(id);
         el.value = el.defaultValue;
       }
-      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      saveSettings(); // 점수 입력값은 유지, 컷·가중치만 기본값으로
       calc();
     }
 
-    document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', calc));
-    SAVED_IDS.forEach(id => document.getElementById(id).addEventListener('input', saveSettings));
+    document.querySelectorAll('input[type=number]').forEach(el => {
+      el.addEventListener('input', calc);
+      el.addEventListener('input', saveSettings);
+    });
     document.getElementById('settings-reset').addEventListener('click', resetSettings);
     loadSettings();
     calc();

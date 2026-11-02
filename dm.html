@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이산수학 성적 계산기</title>
+  <meta name="description" content="국민대 소프트웨어융합대학 이산수학(최승혁 교수) 2026-2학기 성적 계산기">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="index.html">성적 계산기</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">알고리즘</a>
+      <a href="ca.html" class="nav-link">컴퓨터구조</a>
+      <a href="dm.html" class="nav-link active">이산수학</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>이산수학</h1>
+      <p>최승혁 교수 · 국민대학교 소프트웨어융합대학 · 2026-2학기 · 상대평가</p>
+    </div>
+
+    <!-- 반영 비율 -->
+    <p class="section-label">
+      반영 비율
+      <span class="section-label-sub">수업계획서 p.2 평가방법 기준</span>
+    </p>
+    <div class="input-card">
+      <div class="weights-row">
+        <span>중간 <b>30</b></span><span>기말 <b>30</b></span>
+        <span>퀴즈 <b>30</b></span><span>출석 <b>10</b></span>
+      </div>
+      <div class="convert-hint">+ 보너스 기말고사: 신청자 대상 · 퀴즈 점수 회복 · 총점 최대 +3점</div>
+    </div>
+
+    <!-- 시험 -->
+    <p class="section-label">시험</p>
+    <div class="input-grid-2">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">중간고사</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="mid" min="0" max="100" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">10/21(수)·10/26(월) · ×30%</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">기말고사</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="fin" min="0" max="100" step="0.5" value="0">
+          </div>
+        </div>
+        <div class="convert-hint">12/9(수)·12/14(월) · ×30%</div>
+      </div>
+    </div>
+
+    <!-- 퀴즈 · 출석 -->
+    <p class="section-label">퀴즈 · 출석</p>
+    <div class="input-grid-2">
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">퀴즈 (slido %)</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="quiz" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+        <div class="convert-hint">획득 점수 합 ÷ 배점 합 · ×30%</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">출석</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="att" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+        <div class="convert-hint">×10% · 수업일수 1/4 이상 결석 시 성적 미부여</div>
+      </div>
+      <div class="input-card span-2">
+        <div class="input-row">
+          <span class="input-label">보너스 기말고사 (맞은 개수)</span>
+          <div class="input-right">
+            <span class="input-max">/ 10</span>
+            <input type="number" id="bonus" min="0" max="10" step="1" value="0">
+          </div>
+        </div>
+        <div class="convert-hint" id="bonus-hint">신청자 대상 · 기말 이후 난이도 상 10문제 · 맞은 만큼 퀴즈 점수 회복(100 초과 불가) · 총점 최대 +3점</div>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <p class="section-label">결과</p>
+    <div class="result-card">
+      <div class="result-top">
+        <div>
+          <div class="result-label">총점</div>
+          <div class="score-total" id="total">0.00</div>
+        </div>
+        <div class="grade-badge grade-c" id="grade-badge">C0</div>
+      </div>
+      <div class="hint-text" id="hint"></div>
+    </div>
+
+    <!-- 점수 구성 바 차트 -->
+    <p class="section-label">점수 구성</p>
+    <div class="result-card">
+      <div class="bar-section">
+        <div class="bar-row">
+          <span class="bar-label">중간고사</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-mid"></div></div>
+          <span class="bar-val" id="bar-mid-val">0.0 / 30</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">기말고사</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-fin"></div></div>
+          <span class="bar-val" id="bar-fin-val">0.0 / 30</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">퀴즈</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-quiz"></div></div>
+          <span class="bar-val" id="bar-quiz-val">0.0 / 30</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">보너스 회복</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-bonus"></div></div>
+          <span class="bar-val" id="bar-bonus-val">+0.0</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">출석</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-att"></div></div>
+          <span class="bar-val" id="bar-att-val">0.0 / 10</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기말 목표 역산 -->
+    <p class="section-label">
+      기말 목표 역산
+      <span class="section-label-sub">기말 입력값 대신, 등급별로 필요한 기말 점수</span>
+    </p>
+    <div class="result-card">
+      <div class="goal-list" id="goal-list"></div>
+      <div class="convert-hint goal-note">보너스 회복 포함 · 중간·퀴즈·출석은 위 입력값 그대로 가정</div>
+    </div>
+
+    <!-- 등급 기준 -->
+    <p class="section-label">
+      등급 기준 (상대평가 · 중간 후 잠정)
+      <span class="section-label-sub">기대 총점 기준 컷 (이상)</span>
+    </p>
+    <div class="grade-chips" id="grade-chips">
+      <div class="grade-chip grade-ap" data-grade="A+">A+ <span class="threshold">80↑</span></div>
+      <div class="grade-chip grade-a" data-grade="A0">A0 <span class="threshold">75↑</span></div>
+      <div class="grade-chip grade-bp" data-grade="B+">B+ <span class="threshold">70↑</span></div>
+      <div class="grade-chip grade-b" data-grade="B0">B0 <span class="threshold">60↑</span></div>
+      <div class="grade-chip grade-cp" data-grade="C+">C+ <span class="threshold">40↑</span></div>
+      <div class="grade-chip grade-c" data-grade="C0">C0 <span class="threshold">40↓</span></div>
+    </div>
+    <p class="grade-note">상대평가라 컷은 중간고사 직후 '기대 총점(기말=중간 가정)' 분포 기준 잠정값 — 기말 이후 바뀔 수 있음 · 분포: A+ 11명(17.5%) · A0 8명(12.7%) · B+ 12명(19.1%) · B0 14명(22.2%) · C+ 15명(23.8%) · C0 3명 · 상대평가 제외 학생은 제외</p>
+
+    <div class="page-footer">
+      <div class="formula-text">
+        총점 = 중간×0.3 + 기말×0.3 + 퀴즈%×0.3 + 출석%×0.1 + 보너스 회복<br>
+        보너스 회복 = min(10, 100 − 퀴즈, 맞은 개수) × 0.3 (최대 +3점) · 퀴즈를 100까지만 되살림<br>
+        출처: 수업계획서 p.2 평가방법 · 성적기준 안내(중간 후) · 보너스 기말고사 안내
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const W = { mid: 30, fin: 30, quiz: 30, att: 10 }; // 수업계획서 평가방법
+    // 등급 컷은 상대평가 중간 후 잠정 (기대 총점 = 기말 점수가 중간과 동일할 경우)
+    const GRADES = [
+      [80, 'A+', 'grade-ap'], [75, 'A0', 'grade-a'], [70, 'B+', 'grade-bp'],
+      [60, 'B0', 'grade-b'], [40, 'C+', 'grade-cp'],
+    ];
+    const FALLBACK = ['C0', 'grade-c']; // 40점 미만
+    const GOAL_TARGETS = GRADES; // A+ ~ C+
+
+    function clamp(v, mn, mx) { return Math.min(mx, Math.max(mn, parseFloat(v) || 0)); }
+    function val(id, mn, mx) { return clamp(document.getElementById(id).value, mn, mx); }
+    function setText(id, text) { document.getElementById(id).textContent = text; }
+
+    function getGrade(s) {
+      for (const [min, label, cls] of GRADES) if (s >= min) return [label, cls];
+      return FALLBACK;
+    }
+
+    function setBar(id, v, max, color, opts = {}) {
+      const fill = document.getElementById(id);
+      fill.style.width = (max > 0 ? Math.min(v / max, 1) * 100 : 0) + '%';
+      fill.style.background = color;
+      const pfx = opts.prefix ? '+' : '';
+      const sfx = opts.noMax  ? '' : ` / ${max}`;
+      setText(id + '-val', `${pfx}${v.toFixed(1)}${sfx}`);
+    }
+
+    // 기말 점수 f(0~100)로 목표 총점 target 에 닿으려면 필요한 최소 f.
+    // total(f) = base + 0.3·f (선형, 이산수학은 향상분 보너스 없음)
+    function neededFinal(target, base, wf) {
+      if (base >= target) return 0;
+      const f = (target - base) / wf;
+      return f > 100 ? null : f;
+    }
+
+    function renderGoals(base, wf) {
+      const maxTotal = base + wf * 100;
+      document.getElementById('goal-list').innerHTML = GOAL_TARGETS.map(([min, label, cls]) => {
+        const f = neededFinal(min, base, wf);
+        let text;
+        if (f === 0)        text = '<span class="goal-ok">기말 0점이어도 달성</span>';
+        else if (f === null) text = `<span class="goal-no">기말 만점이어도 ${maxTotal.toFixed(1)}점 · 불가</span>`;
+        else                text = `기말 <b>${(Math.ceil(f * 10 - 1e-9) / 10).toFixed(1)}</b>점 이상`;
+        return `<div class="goal-row"><span class="grade-chip ${cls}">${label} <span class="threshold">${min}↑</span></span><span class="goal-text">${text}</span></div>`;
+      }).join('');
+    }
+
+    function calc() {
+      const mid   = val('mid', 0, 100);
+      const fin   = val('fin', 0, 100);
+      const quiz  = val('quiz', 0, 100);
+      const att   = val('att', 0, 100);
+      const bonus = val('bonus', 0, 10);
+
+      const recovered = Math.min(bonus, 100 - quiz); // 퀴즈를 100까지만 되살림
+      const quizEff   = quiz + recovered;
+
+      const vMid   = mid * W.mid / 100;
+      const vFin   = fin * W.fin / 100;
+      const vQuiz  = quiz * W.quiz / 100;      // 보너스 전 퀴즈
+      const vBonus = recovered * W.quiz / 100; // 회복분 (최대 +3)
+      const vAtt   = att * W.att / 100;
+      const base   = vMid + vQuiz + vBonus + vAtt; // 기말 제외
+      const total  = base + vFin;
+
+      setText('total', total.toFixed(2));
+      setText('bonus-hint', bonus > 0
+        ? `맞은 ${bonus}개 중 ${recovered}점 회복(퀴즈 ${quiz}→${quizEff}) = +${vBonus.toFixed(2)}점 · 퀴즈 100 초과 불가`
+        : '신청자 대상 · 기말 이후 난이도 상 10문제 · 맞은 만큼 퀴즈 점수 회복(100 초과 불가) · 총점 최대 +3점');
+
+      const [grade, gradeClass] = getGrade(total);
+      const badge = document.getElementById('grade-badge');
+      badge.textContent = grade;
+      badge.className = 'grade-badge ' + gradeClass;
+      document.querySelectorAll('#grade-chips .grade-chip').forEach(c =>
+        c.classList.toggle('current', c.dataset.grade === grade));
+
+      const aPlus = GRADES[0][0];
+      if (total >= aPlus) {
+        setText('hint', `A+ 기준(${aPlus}점)을 충족합니다`);
+      } else {
+        const cuts = [...GRADES.map(g => g[0]), 0];
+        const nextUp = Math.min(...cuts.filter(t => t > total));
+        setText('hint', `A+ 까지 ${(aPlus - total).toFixed(1)}점 부족  ·  다음 등급까지 ${(nextUp - total).toFixed(1)}점`);
+      }
+
+      setBar('bar-mid',   vMid,   W.mid,  '#378ADD');
+      setBar('bar-fin',   vFin,   W.fin,  '#1D9E75');
+      setBar('bar-quiz',  vQuiz,  W.quiz, '#7F77DD');
+      setBar('bar-bonus', vBonus, 3,      '#EF9F27', { prefix: true, noMax: true });
+      setBar('bar-att',   vAtt,   W.att,  '#BA7517');
+
+      renderGoals(base, W.fin / 100);
+    }
+
+    // 입력값을 이 브라우저(localStorage)에 저장. 저장소를 못 쓰면 무시하고 기본값 동작.
+    const STORE_KEY = 'dm-inputs-v1';
+    const numInputs = document.querySelectorAll('input[type=number]');
+
+    function loadInputs() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        numInputs.forEach(el => { if (saved[el.id] != null) el.value = saved[el.id]; });
+      } catch (e) {}
+    }
+
+    function saveInputs() {
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(
+          Object.fromEntries(Array.from(numInputs).map(el => [el.id, el.value]))));
+      } catch (e) {}
+    }
+
+    numInputs.forEach(el => {
+      el.addEventListener('input', calc);
+      el.addEventListener('input', saveInputs);
+    });
+    loadInputs();
+    calc();
+  </script>
+</body>
+</html>
