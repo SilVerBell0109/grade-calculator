@@ -159,18 +159,18 @@
       <button type="button" class="reset-btn" id="settings-reset">기본값 복원</button>
     </p>
     <div class="cut-grid" id="grade-chips">
-      <label class="cut-item"><span class="grade-chip grade-ap" data-grade="A+">A+</span><input type="number" id="cut-ap" min="0" max="100" step="0.5" value="95"></label>
-      <label class="cut-item"><span class="grade-chip grade-a" data-grade="A">A</span><input type="number" id="cut-a" min="0" max="100" step="0.5" value="90"></label>
-      <label class="cut-item"><span class="grade-chip grade-bp" data-grade="B+">B+</span><input type="number" id="cut-bp" min="0" max="100" step="0.5" value="85"></label>
-      <label class="cut-item"><span class="grade-chip grade-b" data-grade="B">B</span><input type="number" id="cut-b" min="0" max="100" step="0.5" value="80"></label>
-      <label class="cut-item"><span class="grade-chip grade-cp" data-grade="C+">C+</span><input type="number" id="cut-cp" min="0" max="100" step="0.5" value="75"></label>
-      <label class="cut-item"><span class="grade-chip grade-c" data-grade="C">C</span><input type="number" id="cut-c" min="0" max="100" step="0.5" value="70"></label>
-      <label class="cut-item"><span class="grade-chip grade-dp" data-grade="D+">D+</span><input type="number" id="cut-dp" min="0" max="100" step="0.5" value="65"></label>
-      <label class="cut-item"><span class="grade-chip grade-d" data-grade="D">D</span><input type="number" id="cut-d" min="0" max="100" step="0.5" value="60"></label>
-      <div class="cut-item"><span class="grade-chip grade-f" data-grade="F">F</span><span class="cut-f" id="cut-f">60 미만</span></div>
+      <label class="cut-item"><span class="grade-chip grade-ap" data-grade="A+">A+</span><input type="number" id="cut-ap" min="0" max="100" step="0.5" value="85"></label>
+      <label class="cut-item"><span class="grade-chip grade-a" data-grade="A">A</span><input type="number" id="cut-a" min="0" max="100" step="0.5" value="75"></label>
+      <label class="cut-item"><span class="grade-chip grade-bp" data-grade="B+">B+</span><input type="number" id="cut-bp" min="0" max="100" step="0.5" value="65"></label>
+      <label class="cut-item"><span class="grade-chip grade-b" data-grade="B">B</span><input type="number" id="cut-b" min="0" max="100" step="0.5" value="55"></label>
+      <label class="cut-item"><span class="grade-chip grade-cp" data-grade="C+">C+</span><input type="number" id="cut-cp" min="0" max="100" step="0.5" value="45"></label>
+      <label class="cut-item"><span class="grade-chip grade-c" data-grade="C">C</span><input type="number" id="cut-c" min="0" max="100" step="0.5" value="35"></label>
+      <label class="cut-item"><span class="grade-chip grade-dp" data-grade="D+">D+</span><input type="number" id="cut-dp" min="0" max="100" step="0.5" value="25"></label>
+      <label class="cut-item"><span class="grade-chip grade-d" data-grade="D">D</span><input type="number" id="cut-d" min="0" max="100" step="0.5" value="15"></label>
+      <div class="cut-item"><span class="grade-chip grade-f" data-grade="F">F</span><span class="cut-f" id="cut-f">15 미만</span></div>
     </div>
     <p class="grade-note goal-no hidden" id="cut-warn">컷은 A+ 부터 아래로 갈수록 낮아야 합니다</p>
-    <p class="grade-note">컷·향상분 가중치는 이 브라우저에 저장 · 기본값: A+ 95 · A 90 · B+ 85 · B 80 (확인) · C+ 이하 5점 간격 (임시) · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
+    <p class="grade-note">컷·향상분 가중치는 이 브라우저에 저장 · 기본값(합산 점수 기준): A+ 85 · A 75 · B+ 65 · B 55 · C+ 45 · C 35 · D+ 25 · D 15 · F 15 미만 · 다른 학생과 비교하지 않고 본인 점수로만 등급 결정 · 수업일수 1/4 이상 결석 시 성적 미부여</p>
 
     <div class="page-footer">
       <div class="formula-text">
@@ -183,7 +183,7 @@
 
   <script>
     const W = { mid: 25, fin: 25, lab: 30, hw: 20 }; // 수업계획서 평가방법
-    // 등급 컷은 화면 입력값(기본: A+ 95 · A 90 · B+ 85 · B 80 확인, C+ 이하 임시)
+    // 등급 컷은 화면 입력값(기본: 합산 점수 기준 A+ 85 · A 75 · B+ 65 · B 55 · C+ 45 · C 35 · D+ 25 · D 15)
     const GRADE_DEFS = [
       ['A+', 'grade-ap', 'cut-ap'], ['A', 'grade-a', 'cut-a'], ['B+', 'grade-bp', 'cut-bp'],
       ['B', 'grade-b', 'cut-b'], ['C+', 'grade-cp', 'cut-cp'], ['C', 'grade-c', 'cut-c'],
@@ -281,13 +281,18 @@
     }
 
     // 입력값(점수·등급 컷·향상분 가중치)을 브라우저(localStorage)에 저장. 저장소를 못 쓰면 기본값으로 동작.
-    const STORE_KEY = 'ca-settings-v1';
+    const STORE_KEY = 'ca-settings-v2';
+    const OLD_STORE_KEY = 'ca-settings-v1'; // 옛 컷이 저장된 키
     const PERSIST_IDS = Array.from(document.querySelectorAll('input[type=number]')).map(el => el.id);
     const RESET_IDS = ['bonus-w', ...GRADE_DEFS.map(d => d[2])]; // '기본값 복원' 버튼 대상(컷·가중치만, 점수는 유지)
 
     function loadSettings() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        let saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+        if (!saved) { // v1 값은 점수·가중치만 이어받고 옛 컷은 버린다
+          saved = JSON.parse(localStorage.getItem(OLD_STORE_KEY) || '{}');
+          for (const d of GRADE_DEFS) delete saved[d[2]];
+        }
         for (const id of PERSIST_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
       } catch (e) {}
     }
