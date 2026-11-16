@@ -89,7 +89,7 @@
         <span class="input-label">퀴즈 합계 점수</span>
         <div class="input-right">
           <span class="input-max">/ 30</span>
-          <input type="number" id="quiz" min="0" max="30" step="0.01" value="17">
+          <input type="number" id="quiz" min="0" max="30" step="0.01" value="0">
         </div>
       </div>
       <div class="convert-hint">eCampus 성적부 '퀴즈 합계' 성적(0~30) 직접 입력</div>
@@ -101,9 +101,9 @@
       <div class="input-card span-2" id="quiz-subtotal-card">
         <div class="subtotal-row">
           <span class="subtotal-label">퀴즈 합계 (30점 환산)</span>
-          <span class="subtotal-val" id="quiz-sum-val">17.0 / 30 (34 / 60)</span>
+          <span class="subtotal-val" id="quiz-sum-val">0.0 / 30</span>
         </div>
-        <div class="convert-hint">각 퀴즈를 '획득 / 배점'으로 입력 · 배점 0인 퀴즈(앞으로 예정)는 합계에서 제외 · 기본값은 11/2 성적부 기준</div>
+        <div class="convert-hint">각 퀴즈를 '획득 / 배점'으로 입력 · 획득 칸이 빈 퀴즈(아직 안 침)는 합계에서 제외 · 배점은 성적부 범위 기준(남은 퀴즈는 10점 예상) · 입력값은 이 브라우저에만 저장</div>
       </div>
     </div>
 
@@ -217,19 +217,20 @@
 
     // 퀴즈 입력 방식: 'single'(합계 점수 직접) | 'items'(성적부 항목별)
     let quizMode = 'items';
-    // 각 퀴즈: { id, label, s:기본 획득점수, m:기본 배점 }. 배점 0 = 아직 안 치른 퀴즈(합계 제외)
-    // 현재 값은 2026-11-02 eCampus 성적부 기준 · q-6~q-10 은 앞으로의 퀴즈 자리(배점 입력 시 합계 반영)
+    // 각 퀴즈: { id, label, m:기본 배점 }. 획득 칸은 비워 두고(=아직 안 침, 합계 제외) 사용자가 입력.
+    // 배점은 eCampus 성적부 '범위' 기준(퀴즈 4 & 5 만 20점) · 퀴즈 8~10 은 10점 예상.
+    // 개인 점수는 코드에 넣지 않는다 — 입력값은 이 브라우저 localStorage 에만 저장된다.
     const QUIZ_ITEMS = [
-      { id: 'q-prac', label: '퀴즈 연습', s: 5,  m: 10 },
-      { id: 'q-1',    label: '퀴즈 1',    s: 0,  m: 10 },
-      { id: 'q-2',    label: '퀴즈 2',    s: 8,  m: 10 },
-      { id: 'q-3',    label: '퀴즈 3',    s: 8,  m: 10 },
-      { id: 'q-45',   label: '퀴즈 4 & 5', s: 13, m: 20 },
-      { id: 'q-6',    label: '퀴즈 6',    s: 0,  m: 0  },
-      { id: 'q-7',    label: '퀴즈 7',    s: 0,  m: 0  },
-      { id: 'q-8',    label: '퀴즈 8',    s: 0,  m: 0  },
-      { id: 'q-9',    label: '퀴즈 9',    s: 0,  m: 0  },
-      { id: 'q-10',   label: '퀴즈 10',   s: 0,  m: 0  },
+      { id: 'q-prac', label: '퀴즈 연습',  m: 10 },
+      { id: 'q-1',    label: '퀴즈 1',     m: 10 },
+      { id: 'q-2',    label: '퀴즈 2',     m: 10 },
+      { id: 'q-3',    label: '퀴즈 3',     m: 10 },
+      { id: 'q-45',   label: '퀴즈 4 & 5', m: 20 },
+      { id: 'q-6',    label: '퀴즈 6',     m: 10 },
+      { id: 'q-7',    label: '퀴즈 7',     m: 10 },
+      { id: 'q-8',    label: '퀴즈 8',     m: 10 },
+      { id: 'q-9',    label: '퀴즈 9',     m: 10 },
+      { id: 'q-10',   label: '퀴즈 10',    m: 10 },
     ];
 
     // 퀴즈 항목 카드(획득/배점 두 칸)를 합계 카드 앞에 생성
@@ -239,7 +240,7 @@
           <div class="input-row">
             <span class="input-label">${q.label}</span>
             <div class="input-right">
-              <input type="number" id="${q.id}-s" class="qi-in" min="0" step="0.5" value="${q.s}" aria-label="${q.label} 획득 점수">
+              <input type="number" id="${q.id}-s" class="qi-in" min="0" step="0.5" value="" placeholder="예정" aria-label="${q.label} 획득 점수 (비우면 아직 안 친 퀴즈)">
               <span class="input-max">/</span>
               <input type="number" id="${q.id}-m" class="qi-in qi-max" min="0" step="0.5" value="${q.m}" aria-label="${q.label} 배점">
             </div>
@@ -286,19 +287,22 @@
       }).join('');
     }
 
-    // 퀴즈 환산점수(0~30). items 모드: Σ획득 ÷ Σ배점 × 30 (배점 0 항목은 제외)
+    // 퀴즈 환산점수(0~30). items 모드: Σ획득 ÷ Σ배점 × 30
+    // 획득 칸이 비었거나 배점이 0 인 퀴즈는 아직 안 친 것으로 보고 제외 (획득 0 은 0점으로 반영)
     function quizPoints() {
       if (quizMode === 'items') {
-        let got = 0, max = 0;
+        let got = 0, max = 0, pending = 0;
         for (const q of QUIZ_ITEMS) {
+          const sRaw = document.getElementById(q.id + '-s').value.trim();
           const m = val(q.id + '-m', 0, 1000);
-          if (m <= 0) continue;                               // 배점 0 = 미실시 → 제외
-          got += Math.min(val(q.id + '-s', 0, 1000), m);      // 획득은 배점 상한
+          if (m <= 0) continue;                                // 배점 0 = 반영 안 함
+          if (sRaw === '') { pending++; continue; }            // 획득 빈칸 = 아직 안 침 → 제외
+          got += Math.min(clamp(sRaw, 0, 1000), m);           // 획득은 배점 상한
           max += m;
         }
-        return { pts: max > 0 ? got / max * W.quiz : 0, got, max };
+        return { pts: max > 0 ? got / max * W.quiz : 0, got, max, pending };
       }
-      return { pts: val('quiz', 0, W.quiz), got: null, max: null };
+      return { pts: val('quiz', 0, W.quiz), got: null, max: null, pending: 0 };
     }
 
     function setQuizMode(mode) {
@@ -339,9 +343,9 @@
       const total = base + fin;
 
       setText('total', total.toFixed(2));
-      setText('quiz-sum-val', q.max === null
-        ? `${quiz.toFixed(1)} / ${W.quiz}`
-        : `${quiz.toFixed(1)} / ${W.quiz} (${(+q.got.toFixed(1))} / ${q.max})`);
+      setText('quiz-sum-val', `${quiz.toFixed(1)} / ${W.quiz}` +
+        (q.max > 0 ? ` (${(+q.got.toFixed(1))} / ${q.max})` : '') +
+        (q.pending > 0 ? ` · 예정 ${q.pending}개` : ''));
 
       const [grade, gradeClass] = getGrade(total);
       const badge = document.getElementById('grade-badge');
@@ -369,13 +373,25 @@
     }
 
     // 입력값을 이 브라우저(localStorage)에 저장. 저장소를 못 쓰면 무시하고 기본값 동작.
-    // v3: 퀴즈를 항목별 '획득/배점' 두 칸으로 바꿔 입력 id 가 달라져 키를 올림.
-    const STORE_KEY = 'dm-inputs-v3';
+    // v4: 획득 빈칸 = 미실시로 바뀌고 남은 퀴즈 기본 배점이 10 이 되어 키를 올림.
+    //     v4 가 없으면 v3 에서 이어받되, v3 에서 배점 0(미실시)이던 퀴즈는 버리고 새 기본값(빈 획득·10점)을 쓴다.
+    const STORE_KEY = 'dm-inputs-v4';
+    const OLD_KEY = 'dm-inputs-v3';
     const numInputs = document.querySelectorAll('input[type=number]');
+
+    function readSaved() {
+      const cur = localStorage.getItem(STORE_KEY);
+      if (cur) return JSON.parse(cur);
+      const old = JSON.parse(localStorage.getItem(OLD_KEY) || '{}');
+      QUIZ_ITEMS.forEach(q => {
+        if (!(parseFloat(old[q.id + '-m']) > 0)) { delete old[q.id + '-s']; delete old[q.id + '-m']; }
+      });
+      return old;
+    }
 
     function loadInputs() {
       try {
-        const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+        const saved = readSaved();
         numInputs.forEach(el => { if (saved[el.id] != null) el.value = saved[el.id]; });
         if (saved.quizMode === 'single' || saved.quizMode === 'items') quizMode = saved.quizMode;
       } catch (e) {}

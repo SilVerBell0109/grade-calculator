@@ -26,14 +26,14 @@
     <!-- 반영 비율 -->
     <p class="section-label">
       반영 비율
-      <span class="section-label-sub">강의자료(lecture01) 기준</span>
+      <span class="section-label-sub">eCampus 성적부 기준 (11/16 확인)</span>
     </p>
     <div class="input-card">
       <div class="weights-row">
-        <span>중간 <b>25</b></span><span>기말 <b>25</b></span><span>HW <b>50</b></span>
-        <span>출석 <b>0</b></span>
+        <span>중간 <b>25</b></span><span>기말 <b>25</b></span><span>프로젝트 <b>30</b></span>
+        <span>HW <b>20</b></span><span>출석 <b>0</b></span>
       </div>
-      <div class="convert-hint">출석은 반영하지 않음</div>
+      <div class="convert-hint">과제 50% = 프로젝트 30 + HW 20 · 출석은 반영하지 않음</div>
       <div class="convert-hint">+ 향상분 보너스 (가중치 직접 입력 · 기본 0 = 없음)</div>
     </div>
 
@@ -75,15 +75,25 @@
     <!-- 과제 -->
     <p class="section-label">과제</p>
     <div class="input-grid-2">
-      <div class="input-card span-2">
+      <div class="input-card">
         <div class="input-row">
-          <span class="input-label">HW (eCampus %)</span>
+          <span class="input-label">프로젝트 (%)</span>
+          <div class="input-right">
+            <span class="input-max">/ 100</span>
+            <input type="number" id="project" min="0" max="100" step="1" value="100">
+          </div>
+        </div>
+        <div class="convert-hint">eCampus 팀별 제출(0–60) + 개인점수(0–40) 합 = % · ×30%</div>
+      </div>
+      <div class="input-card">
+        <div class="input-row">
+          <span class="input-label">HW (%)</span>
           <div class="input-right">
             <span class="input-max">/ 100</span>
             <input type="number" id="hw" min="0" max="100" step="1" value="100">
           </div>
         </div>
-        <div class="convert-hint">획득 점수 합 ÷ 배점 합 · 다음 수업 시작 전 마감 · ×50%</div>
+        <div class="convert-hint">HW01~ 획득 점수 합 ÷ 배점 합 · 다음 수업 시작 전 마감 · ×20%</div>
       </div>
     </div>
 
@@ -120,9 +130,14 @@
           <span class="bar-val" id="bar-bonus-val">+0.0</span>
         </div>
         <div class="bar-row">
+          <span class="bar-label">프로젝트</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-project"></div></div>
+          <span class="bar-val" id="bar-project-val">0.0 / 30</span>
+        </div>
+        <div class="bar-row">
           <span class="bar-label">HW</span>
           <div class="bar-track"><div class="bar-fill" id="bar-hw"></div></div>
-          <span class="bar-val" id="bar-hw-val">0.0 / 50</span>
+          <span class="bar-val" id="bar-hw-val">0.0 / 20</span>
         </div>
       </div>
     </div>
@@ -134,7 +149,7 @@
     </p>
     <div class="result-card">
       <div class="goal-list" id="goal-list"></div>
-      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·HW 는 위 입력값 그대로 가정</div>
+      <div class="convert-hint goal-note">향상분 보너스 포함(위 가중치 기준) · 중간·프로젝트·HW 는 위 입력값 그대로 가정</div>
     </div>
 
     <!-- 등급 기준 -->
@@ -157,15 +172,15 @@
 
     <div class="page-footer">
       <div class="formula-text">
-        총점 = 중간×0.25 + 기말×0.25 + HW%×0.5 + 향상분 보너스<br>
+        총점 = 중간×0.25 + 기말×0.25 + 프로젝트%×0.3 + HW%×0.2 + 향상분 보너스<br>
         향상분 보너스 = max(0, 기말 − 중간) × 가중치% (가중치 직접 입력 · 기본 0)<br>
-        출처: 강의자료(lecture01) Assessment
+        출처: eCampus 성적부(11/16) · 수업계획서 p.2 평가방법 · 강의자료(lecture01) Assessment
       </div>
     </div>
   </div>
 
   <script>
-    const W = { mid: 25, fin: 25, hw: 50 }; // 강의자료(lecture01) Assessment
+    const W = { mid: 25, fin: 25, project: 30, hw: 20 }; // eCampus 성적부 (= 수업계획서 평가방법)
     const GRADES = [
       [85, 'A+', 'grade-ap'], [75, 'A', 'grade-a'], [65, 'B+', 'grade-bp'],
       [55, 'B', 'grade-b'], [45, 'C+', 'grade-cp'], [35, 'C', 'grade-c'],
@@ -220,8 +235,9 @@
       const vMid   = mid * W.mid / 100;
       const vFin   = fin * W.fin / 100;
       const vBonus = gain * wb;
+      const vProject = val('project', 0, 100) * W.project / 100;
       const vHw    = val('hw', 0, 100) * W.hw / 100;
-      const base   = vMid + vHw; // 기말·향상분 제외
+      const base   = vMid + vProject + vHw; // 기말·향상분 제외
       const total  = base + vFin + vBonus;
 
       setText('total', total.toFixed(2));
@@ -247,6 +263,7 @@
       setBar('bar-mid', vMid, W.mid, '#378ADD');
       setBar('bar-fin', vFin, W.fin, '#1D9E75');
       setBar('bar-bonus', vBonus, 100 * wb, '#EF9F27', { prefix: true, noMax: true });
+      setBar('bar-project', vProject, W.project, '#639922');
       setBar('bar-hw',  vHw,  W.hw,  '#7F77DD');
 
       renderGoals(GOAL_TARGETS, base, W.fin / 100, wb, mid); // A+ ~ C+
@@ -260,6 +277,11 @@
     function loadSettings() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORE_KEY) || localStorage.getItem(OLD_STORE_KEY) || '{}');
+        if (saved.project == null) { // 옛 Lab 입력값 → 프로젝트 (v2 에 없으면 v1 에서)
+          const lab = saved.lab != null ? saved.lab
+            : JSON.parse(localStorage.getItem(OLD_STORE_KEY) || '{}').lab;
+          if (lab != null) saved.project = lab;
+        }
         for (const id of PERSIST_IDS) if (saved[id] != null) document.getElementById(id).value = saved[id];
       } catch (e) {}
     }
